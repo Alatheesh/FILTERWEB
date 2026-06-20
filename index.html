@@ -177,7 +177,6 @@
             btn.innerText = selectedIndices.size > 0 ? `Send ${selectedIndices.size} Files` : "Send Selected Files";
         }
 
-        // 🚀 THE FIX: Hybrid Link Generator and Removal of tg.close()
         async function sendSelected() {
             if (selectedIndices.size === 0) {
                 tg.showAlert("Please select at least one movie!");
@@ -191,12 +190,11 @@
             const indicesArray = Array.from(selectedIndices).map(Number);
 
             if (indicesArray.length <= 10) {
-                // Instant URL delivery for small batches (Bypasses 64-char limit naturally)
                 const encoded = indicesArray.join('-');
                 const deepLink = `https://t.me/${botUsername}?start=blks_${shortId}_${encoded}`;
                 tg.openTelegramLink(deepLink);
+                // 🚀 Removed tg.close()! You can now just swipe down to minimize it.
             } else {
-                // Cloud URL delivery for massive batches
                 const btn = document.getElementById('sendBtn');
                 btn.innerText = "🔄 Processing Selections...";
                 btn.disabled = true;
@@ -212,6 +210,13 @@
 
                     const deepLink = `https://t.me/${botUsername}?start=blkc_${shortId}_${cloudId}`;
                     tg.openTelegramLink(deepLink);
+                    // 🚀 Removed tg.close()!
+                    
+                    // Reset button in case they want to send another batch without closing
+                    setTimeout(() => {
+                        btn.innerText = `Send ${selectedIndices.size} Files`;
+                        btn.disabled = false;
+                    }, 2000);
                 } catch (e) {
                     tg.showAlert("Network error processing massive selection. Please try selecting fewer files.");
                     btn.innerText = `Send ${selectedIndices.size} Files`;

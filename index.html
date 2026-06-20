@@ -23,7 +23,9 @@
             display: flex;
             align-items: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: 0.2s ease;
         }
+        .movie-item:active { transform: scale(0.98); }
         .checkbox-container {
             display: flex;
             align-items: center;
@@ -39,6 +41,7 @@
             margin-right: 15px;
             position: relative;
             outline: none;
+            flex-shrink: 0;
         }
         input[type="checkbox"]:checked {
             background-color: var(--tg-theme-button-color, #2b9eb3);
@@ -78,10 +81,11 @@
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand();
+        tg.expand(); 
 
         const urlParams = new URLSearchParams(window.location.search);
         const botUsername = urlParams.get('bot') || "suchitha1bot"; 
+        const shortId = urlParams.get('id'); // The short RAM Cache ID
         const rawData = urlParams.get('data');
         
         let movies = [];
@@ -92,13 +96,15 @@
         }
 
         const listContainer = document.getElementById('movie-list');
-        movies.forEach(movie => {
+        
+        // Render 60 movies with index IDs mapping to the backend Cache
+        movies.forEach((title, index) => {
             const div = document.createElement('div');
             div.className = 'movie-item';
             div.innerHTML = `
                 <label class="checkbox-container">
-                    <input type="checkbox" value="${movie.i}">
-                    <span class="movie-title">📂 ${movie.t}...</span>
+                    <input type="checkbox" value="${index}">
+                    <span class="movie-title">📂 ${title}...</span>
                 </label>
             `;
             listContainer.appendChild(div);
@@ -106,15 +112,28 @@
 
         function sendSelected() {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-            const selectedIds = Array.from(checkboxes).map(cb => cb.value).join('-');
-
-            if (selectedIds.length === 0) {
+            
+            if (checkboxes.length === 0) {
                 tg.showAlert("Please select at least one movie!");
                 return;
             }
 
-            const deepLink = `https://t.me/${botUsername}?start=bulk_${selectedIds}`;
+            // ADVANCED: Convert selections into a Hexadecimal Bitmask to bypass the 64-character limit
+            let mask = 0n;
+            checkboxes.forEach(cb => {
+                let idx = BigInt(cb.value);
+                mask |= (1n << idx);
+            });
+            let hexMask = mask.toString(16);
+
+            // Construct the extremely short deep link (e.g., ?start=blk_a1b2c3d4_f)
+            const deepLink = `https://t.me/${botUsername}?start=blk_${shortId}_${hexMask}`;
+            
+            // Send to bot AND close the UI immediately so the user can see the files arriving!
             tg.openTelegramLink(deepLink);
+            setTimeout(() => {
+                tg.close();
+            }, 100); 
         }
     </script>
 </body>

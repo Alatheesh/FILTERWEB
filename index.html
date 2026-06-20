@@ -12,20 +12,36 @@
             color: var(--tg-theme-text-color, #f5f5f5);
             margin: 0;
             padding: 15px;
-            padding-bottom: 80px;
+            padding-bottom: 90px; /* 🚀 FIX: Increased padding to clear the button completely */
         }
-        h2 { margin-top: 0; font-size: 1.3rem; color: var(--tg-theme-hint-color, #8ba1b6); }
+        h2 { margin-top: 0; font-size: 1.2rem; color: var(--tg-theme-hint-color, #8ba1b6); margin-bottom: 10px; }
+        
+        /* 🚀 NEW: Search Bar UI */
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--tg-theme-hint-color, #8ba1b6);
+            background-color: var(--tg-theme-secondary-bg-color, #242f3d);
+            color: var(--tg-theme-text-color, #f5f5f5);
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
+        }
+
         .movie-item {
             background-color: var(--tg-theme-secondary-bg-color, #242f3d);
-            margin-bottom: 10px;
-            padding: 15px;
+            margin-bottom: 8px;
+            padding: 12px;
             border-radius: 10px;
             display: flex;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: 0.1s ease;
         }
-        .movie-item:active { transform: scale(0.98); }
+        .movie-item.hidden { display: none; }
+        
         .checkbox-container {
             display: flex;
             align-items: center;
@@ -34,49 +50,57 @@
         }
         input[type="checkbox"] {
             appearance: none;
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             border: 2px solid var(--tg-theme-button-color, #2b9eb3);
             border-radius: 5px;
-            margin-right: 15px;
+            margin-right: 12px;
             position: relative;
             outline: none;
             flex-shrink: 0;
         }
-        input[type="checkbox"]:checked {
-            background-color: var(--tg-theme-button-color, #2b9eb3);
-        }
+        input[type="checkbox"]:checked { background-color: var(--tg-theme-button-color, #2b9eb3); }
         input[type="checkbox"]:checked::after {
-            content: "✓";
-            position: absolute;
-            color: var(--tg-theme-button-text-color, #ffffff);
-            font-size: 16px;
-            font-weight: bold;
-            left: 5px;
-            top: 0px;
+            content: "✓"; position: absolute; color: white;
+            font-size: 14px; font-weight: bold; left: 4px; top: 0px;
         }
-        .movie-title { font-size: 1rem; font-weight: 500; word-break: break-word; }
+        
+        /* 🚀 NEW: Title & Size Formatting */
+        .movie-info { display: flex; flex-direction: column; }
+        .movie-title { font-size: 0.95rem; font-weight: 500; word-break: break-word; }
+        .movie-size { font-size: 0.8rem; color: var(--tg-theme-button-color, #38bdf8); margin-top: 3px; font-weight: bold; }
+        
+        /* 🚀 NEW: Pagination Controls */
+        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .page-btn {
+            background-color: transparent; border: 1px solid var(--tg-theme-button-color, #2b9eb3);
+            color: var(--tg-theme-button-color, #2b9eb3); padding: 8px 15px; border-radius: 8px; font-weight: bold;
+        }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .page-info { font-size: 0.9rem; color: var(--tg-theme-hint-color, #8ba1b6); }
+
         .send-btn {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            background-color: var(--tg-theme-button-color, #2b9eb3);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            cursor: pointer;
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 400px; background-color: var(--tg-theme-button-color, #2b9eb3);
+            color: var(--tg-theme-button-text-color, #ffffff); border: none; padding: 15px;
+            border-radius: 12px; font-size: 1.1rem; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer; z-index: 1000;
         }
     </style>
 </head>
 <body>
     <h2>Select files to download:</h2>
+    
+    <input type="text" id="searchInput" class="search-box" placeholder="Search in results..." onkeyup="filterMovies()">
+
     <div id="movie-list"></div>
+
+    <div class="pagination">
+        <button class="page-btn" id="prevBtn" onclick="changePage(-1)">◀ Prev</button>
+        <span class="page-info" id="pageInfo">Page 1</span>
+        <button class="page-btn" id="nextBtn" onclick="changePage(1)">Next ▶</button>
+    </div>
+
     <button class="send-btn" id="sendBtn" onclick="sendSelected()">Send Selected Files</button>
 
     <script>
@@ -85,56 +109,110 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const botUsername = urlParams.get('bot') || "suchitha1bot"; 
-        const shortId = urlParams.get('id'); // The short RAM Cache ID
+        const shortId = urlParams.get('id'); 
         const rawData = urlParams.get('data');
         
         let movies = [];
+        let filteredMovies = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
         try {
             movies = JSON.parse(decodeURIComponent(rawData));
+            // Add original index so bitmask works even after sorting/searching
+            movies = movies.map((m, idx) => ({ ...m, originalIndex: idx }));
+            filteredMovies = movies;
         } catch(e) {
             document.getElementById('movie-list').innerHTML = "<p>Error loading movies.</p>";
         }
 
-        const listContainer = document.getElementById('movie-list');
+        // 🚀 NEW: Pagination Renderer
+        function renderList() {
+            const listContainer = document.getElementById('movie-list');
+            listContainer.innerHTML = '';
+            
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const paginatedItems = filteredMovies.slice(start, end);
+
+            paginatedItems.forEach(movie => {
+                const div = document.createElement('div');
+                div.className = 'movie-item';
+                // Maintain checked state if they navigate pages
+                const isChecked = document.querySelector(`input[value="${movie.originalIndex}"]:checked`) ? "checked" : "";
+                
+                div.innerHTML = `
+                    <label class="checkbox-container">
+                        <input type="checkbox" value="${movie.originalIndex}" class="movie-checkbox" ${isChecked} onchange="updateSendButton()">
+                        <div class="movie-info">
+                            <span class="movie-title">📂 ${movie.t}...</span>
+                            <span class="movie-size">💾 [${movie.s}]</span>
+                        </div>
+                    </label>
+                `;
+                listContainer.appendChild(div);
+            });
+
+            // Update Pagination Buttons
+            document.getElementById('pageInfo').innerText = `Page ${currentPage} of ${Math.ceil(filteredMovies.length / itemsPerPage) || 1}`;
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = end >= filteredMovies.length;
+        }
+
+        function changePage(direction) {
+            saveSelections(); // Ensure checkboxes off-screen are remembered
+            currentPage += direction;
+            renderList();
+        }
+
+        // 🚀 NEW: Search Filter Logic
+        function filterMovies() {
+            saveSelections();
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            filteredMovies = movies.filter(m => m.t.toLowerCase().includes(query));
+            currentPage = 1;
+            renderList();
+        }
+
+        // Global storage for selections across pages
+        let selectedIndices = new Set();
         
-        // Render 60 movies with index IDs mapping to the backend Cache
-        movies.forEach((title, index) => {
-            const div = document.createElement('div');
-            div.className = 'movie-item';
-            div.innerHTML = `
-                <label class="checkbox-container">
-                    <input type="checkbox" value="${index}">
-                    <span class="movie-title">📂 ${title}...</span>
-                </label>
-            `;
-            listContainer.appendChild(div);
-        });
+        function saveSelections() {
+            document.querySelectorAll('.movie-checkbox').forEach(cb => {
+                if (cb.checked) selectedIndices.add(cb.value);
+                else selectedIndices.delete(cb.value);
+            });
+            updateSendButton();
+        }
+
+        function updateSendButton() {
+            saveSelections();
+            const btn = document.getElementById('sendBtn');
+            btn.innerText = selectedIndices.size > 0 ? `Send ${selectedIndices.size} Files` : "Send Selected Files";
+        }
 
         function sendSelected() {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-            
-            if (checkboxes.length === 0) {
+            saveSelections();
+            if (selectedIndices.size === 0) {
                 tg.showAlert("Please select at least one movie!");
                 return;
             }
 
-            // ADVANCED: Convert selections into a Hexadecimal Bitmask to bypass the 64-character limit
+            // Bitmask generation for Telegram limits
             let mask = 0n;
-            checkboxes.forEach(cb => {
-                let idx = BigInt(cb.value);
-                mask |= (1n << idx);
+            selectedIndices.forEach(idx => {
+                mask |= (1n << BigInt(idx));
             });
             let hexMask = mask.toString(16);
 
-            // Construct the extremely short deep link (e.g., ?start=blk_a1b2c3d4_f)
             const deepLink = `https://t.me/${botUsername}?start=blk_${shortId}_${hexMask}`;
             
-            // Send to bot AND close the UI immediately so the user can see the files arriving!
             tg.openTelegramLink(deepLink);
-            setTimeout(() => {
-                tg.close();
-            }, 100); 
+            setTimeout(() => { tg.close(); }, 100); 
         }
+
+        // Initial Load
+        renderList();
     </script>
 </body>
 </html>

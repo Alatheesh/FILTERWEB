@@ -88,20 +88,17 @@
         const itemsPerPage = 10;
         let selectedIndices = new Set();
 
-        // 🚀 THE FIX: Async Cloud Fetcher
         async function loadCloudData() {
             try {
                 const response = await fetch(decodeURIComponent(dataUrl));
                 const data = await response.json();
                 
                 let rawArray = [];
-                // Check if the data came from the Telegraph fallback
                 if (data.ok && data.result && data.result.content) {
                     let jsonString = "";
                     data.result.content.forEach(p => { if (p.children && p.children[0]) jsonString += p.children[0]; });
                     rawArray = JSON.parse(jsonString);
                 } else {
-                    // Data came from standard JSON host
                     rawArray = data;
                 }
                 
@@ -154,9 +151,23 @@
             renderList();
         }
 
+        // 🚀 THE FIX: Smart Multi-Word Search Engine
         function filterMovies() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            filteredMovies = movies.filter(m => m.t.toLowerCase().includes(query));
+            const queryText = document.getElementById('searchInput').value.toLowerCase();
+            
+            // Split the search input into separate words (e.g., ["spider", "man", "2022", "telugu"])
+            const queryWords = queryText.split(' ').filter(word => word.trim() !== '');
+
+            if (queryWords.length === 0) {
+                filteredMovies = movies;
+            } else {
+                // Keep the movie only if EVERY word typed in the box exists somewhere in its title
+                filteredMovies = movies.filter(m => {
+                    const titleLower = m.t.toLowerCase();
+                    return queryWords.every(word => titleLower.includes(word));
+                });
+            }
+            
             currentPage = 1;
             renderList();
         }
@@ -175,7 +186,6 @@
                 tg.showAlert("Please select at least one movie!");
                 return;
             }
-            // 🛡️ Telegram Link Limit Protection
             if (selectedIndices.size > 240) {
                 tg.showAlert("Telegram limits allow delivering a maximum of 240 files per batch. Please uncheck a few files, send this batch, and open the app again for the rest!");
                 return;
@@ -190,7 +200,6 @@
             setTimeout(() => { tg.close(); }, 100); 
         }
 
-        // Initialize the app by fetching from the cloud
         loadCloudData();
     </script>
 </body>

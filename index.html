@@ -3,98 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Select Movies</title>
+    <title>Bulk Delivery Manager</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #17212b);
+            --sec-bg-color: var(--tg-theme-secondary-bg-color, #242f3d);
+            --text-color: var(--tg-theme-text-color, #f5f5f5);
+            --hint-color: var(--tg-theme-hint-color, #8ba1b6);
+            --btn-color: var(--tg-theme-button-color, #2b9eb3);
+            --btn-text: var(--tg-theme-button-text-color, #ffffff);
+            --danger-color: #ef4444;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-theme-bg-color, #17212b);
-            color: var(--tg-theme-text-color, #f5f5f5);
-            margin: 0; padding: 15px; padding-bottom: 90px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0; padding: 15px; padding-bottom: 80px;
             -webkit-font-smoothing: antialiased;
+            user-select: none;
         }
-        h2 { margin-top: 0; font-size: 1.2rem; color: var(--tg-theme-hint-color, #8ba1b6); margin-bottom: 10px; }
-        
-        /* 🚀 GPU Accelerated Search Box */
+
+        /* Tabs */
+        .tab-content { display: none; animation: fadeIn 0.2s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Search Box */
         .search-box {
-            width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px;
-            border: 1px solid var(--tg-theme-hint-color, #8ba1b6);
-            background-color: var(--tg-theme-secondary-bg-color, #242f3d);
-            color: var(--tg-theme-text-color, #f5f5f5); font-size: 1rem; box-sizing: border-box; outline: none;
-            transition: border-color 0.2s ease; will-change: border-color;
+            width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 12px;
+            border: 1px solid var(--hint-color); background-color: var(--sec-bg-color);
+            color: var(--text-color); font-size: 1rem; box-sizing: border-box; outline: none;
+            transition: border-color 0.2s ease;
         }
-        .search-box:focus { border-color: var(--tg-theme-button-color, #2b9eb3); }
+        .search-box:focus { border-color: var(--btn-color); }
 
-        .movie-item {
-            background-color: var(--tg-theme-secondary-bg-color, #242f3d);
-            margin-bottom: 8px; padding: 12px; border-radius: 10px;
-            display: flex; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
-            transition: transform 0.1s ease; will-change: transform;
+        /* Cards */
+        .card {
+            background-color: var(--sec-bg-color); margin-bottom: 10px; padding: 14px; 
+            border-radius: 12px; display: flex; align-items: center; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15); transition: transform 0.1s;
         }
-        .movie-item:active { transform: scale(0.98); }
+        .card:active { transform: scale(0.98); }
         
-        .checkbox-container { display: flex; align-items: center; width: 100%; cursor: pointer; }
+        .info-card {
+            border: 1px solid var(--btn-color); flex-direction: column; align-items: flex-start;
+            margin-bottom: 20px; background: rgba(43, 158, 179, 0.05);
+        }
+        .info-header { font-size: 1.1rem; font-weight: bold; margin-bottom: 10px; color: var(--btn-color); width: 100%; text-align: center; border-bottom: 1px solid var(--hint-color); padding-bottom: 8px;}
+        .info-row { display: flex; justify-content: space-between; width: 100%; margin-bottom: 8px; font-size: 0.95rem; }
+        .info-label { color: var(--hint-color); font-weight: 500;}
+        .info-value { font-weight: bold; }
+
+        /* Checkboxes & Handles */
+        .checkbox-container { display: flex; align-items: center; width: 100%; cursor: pointer; flex: 1;}
         input[type="checkbox"] {
-            appearance: none; width: 22px; height: 22px; border: 2px solid var(--tg-theme-button-color, #2b9eb3);
-            border-radius: 5px; margin-right: 12px; position: relative; outline: none; flex-shrink: 0;
-            transition: background-color 0.1s;
+            appearance: none; width: 22px; height: 22px; border: 2px solid var(--btn-color);
+            border-radius: 6px; margin-right: 12px; position: relative; outline: none; flex-shrink: 0;
         }
-        input[type="checkbox"]:checked { background-color: var(--tg-theme-button-color, #2b9eb3); }
-        input[type="checkbox"]:checked::after {
-            content: "✓"; position: absolute; color: white; font-size: 14px; font-weight: bold; left: 4px; top: 0px;
-        }
+        input[type="checkbox"]:checked { background-color: var(--btn-color); }
+        input[type="checkbox"]:checked::after { content: "✓"; position: absolute; color: white; font-size: 14px; font-weight: bold; left: 4px; top: 0px; }
         
-        .movie-info { display: flex; flex-direction: column; }
-        .movie-title { font-size: 0.95rem; font-weight: 500; word-break: break-word; }
-        .movie-size { font-size: 0.8rem; color: var(--tg-theme-button-color, #38bdf8); margin-top: 3px; font-weight: bold; }
-        
-        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
-        .page-btn {
-            background-color: transparent; border: 1px solid var(--tg-theme-button-color, #2b9eb3);
-            color: var(--tg-theme-button-color, #2b9eb3); padding: 8px 15px; border-radius: 8px; font-weight: bold;
-            transition: opacity 0.2s;
-        }
-        .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-        .page-info { font-size: 0.9rem; color: var(--tg-theme-hint-color, #8ba1b6); font-weight: 500; }
+        .drag-handle { margin-right: 12px; color: var(--hint-color); font-size: 1.2rem; cursor: grab; padding: 5px; }
+        .remove-btn { color: var(--danger-color); font-size: 1.2rem; background: none; border: none; padding: 5px 10px; cursor: pointer; font-weight: bold;}
 
-        .send-btn {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px;
-            background-color: var(--tg-theme-button-color, #2b9eb3); color: var(--tg-theme-button-text-color, #ffffff);
-            border: none; padding: 15px; border-radius: 12px; font-size: 1.1rem; font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer; z-index: 1000;
-            will-change: transform; transition: transform 0.1s ease;
-        }
-        .send-btn:active { transform: translateX(-50%) scale(0.97); }
+        /* Typography */
+        .movie-info { display: flex; flex-direction: column; flex: 1; overflow: hidden;}
+        .movie-title { font-size: 0.95rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .movie-size { font-size: 0.8rem; color: #38bdf8; margin-top: 4px; font-weight: bold; }
         
-        /* 🚀 Smooth Loading Spinner */
-        #loadingWrapper { display: flex; flex-direction: column; align-items: center; margin-top: 40px; }
-        .spinner {
-            width: 40px; height: 40px; border: 4px solid var(--tg-theme-secondary-bg-color, #242f3d);
-            border-top: 4px solid var(--tg-theme-button-color, #2b9eb3); border-radius: 50%;
-            animation: spin 0.8s linear infinite; margin-bottom: 10px;
+        /* Buttons & Selects */
+        select.sort-dropdown {
+            background: var(--bg-color); color: var(--text-color); border: 1px solid var(--hint-color);
+            padding: 4px 8px; border-radius: 6px; outline: none; font-weight: bold;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading-text { color: var(--tg-theme-hint-color, #8ba1b6); font-weight: 500; font-size: 0.95rem; }
+        .action-row { display: flex; justify-content: space-between; width: 100%; margin-top: 10px; gap: 10px; }
+        .action-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--hint-color); background: var(--sec-bg-color); color: var(--text-color); font-weight: bold; cursor: pointer;}
+        
+        /* Pagination */
+        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; margin-bottom: 20px;}
+        .page-btn { background: transparent; border: 1px solid var(--btn-color); color: var(--btn-color); padding: 8px 16px; border-radius: 8px; font-weight: bold;}
+        .page-btn:disabled { opacity: 0.3; }
+
+        /* Floating Action Button (Continue/Send) */
+        .fab-btn {
+            position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px;
+            background-color: var(--btn-color); color: var(--btn-text);
+            border: none; padding: 14px; border-radius: 12px; font-size: 1.1rem; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4); cursor: pointer; z-index: 90;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; background: var(--sec-bg-color);
+            display: flex; border-top: 1px solid rgba(0,0,0,0.2); z-index: 100;
+        }
+        .nav-item {
+            flex: 1; padding: 15px 0; text-align: center; color: var(--hint-color);
+            font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: 0.2s;
+        }
+        .nav-item.active { color: var(--btn-color); border-top: 3px solid var(--btn-color); background: rgba(43, 158, 179, 0.1); }
+
+        /* Multi-Select Toolbar */
+        .multi-toolbar {
+            position: fixed; bottom: 0; left: 0; right: 0; background: var(--sec-bg-color);
+            display: flex; flex-wrap: wrap; padding: 10px; gap: 8px; border-top: 1px solid var(--btn-color);
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 110;
+        }
+        .multi-toolbar.active { transform: translateY(0); }
+        .tb-btn { flex: 1 1 45%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; font-size: 0.9rem; color: white;}
+        .tb-move { background: var(--btn-color); }
+        .tb-del { background: var(--danger-color); }
+        .tb-cancel { background: var(--hint-color); flex: 1 1 100%;}
+
+        /* Loaders */
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid var(--sec-bg-color);
+            border-top: 4px solid var(--btn-color); border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin: 40px auto 10px auto;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .loading-text { text-align: center; color: var(--hint-color); font-weight: 500; }
+        
+        .preview-item { font-size: 0.95rem; margin-bottom: 12px; display: flex; align-items: flex-start;}
+        .preview-num { color: var(--btn-color); font-weight: bold; width: 30px; flex-shrink: 0;}
     </style>
 </head>
 <body>
-    <h2>Select files to download:</h2>
-    <input type="text" id="searchInput" class="search-box" placeholder="Search in results..." onkeyup="debouncedSearch()">
-    
-    <div id="loadingWrapper">
-        <div class="spinner"></div>
-        <div class="loading-text" id="loadingText">Fetching from Cloud...</div>
-    </div>
-    
-    <div id="movie-list"></div>
 
-    <div class="pagination" id="paginationBar" style="display: none;">
-        <button class="page-btn" id="prevBtn" onclick="changePage(-1)">◀ Prev</button>
-        <span class="page-info" id="pageInfo">Page 1</span>
-        <button class="page-btn" id="nextBtn" onclick="changePage(1)">Next ▶</button>
+    <div id="tab-files" class="tab-content active">
+        <input type="text" id="searchInput" class="search-box" placeholder="Search available files..." onkeyup="debouncedSearch()">
+        <div id="loadingWrapper">
+            <div class="spinner"></div>
+            <div class="loading-text" id="loadingText">Fetching from Cloud...</div>
+        </div>
+        <div id="movie-list"></div>
+        <div class="pagination" id="paginationBar" style="display: none;">
+            <button class="page-btn" id="prevBtn" onclick="changePage(-1)">◀ Prev</button>
+            <span class="page-info" id="pageInfo" style="color:var(--hint-color); font-weight:bold;">Page 1</span>
+            <button class="page-btn" id="nextBtn" onclick="changePage(1)">Next ▶</button>
+        </div>
+        <button class="fab-btn" id="continueBtn" style="display:none;" onclick="switchTab('manager')">Continue (0)</button>
     </div>
 
-    <button class="send-btn" id="sendBtn" onclick="sendSelected()" style="display:none;">Send Selected Files</button>
+    <div id="tab-manager" class="tab-content">
+        <div class="card info-card">
+            <div class="info-header">⭐ Collection Manager</div>
+            <div class="info-row"><span class="info-label">📦 Selected:</span><span class="info-value" id="mgr-count">0 Files</span></div>
+            <div class="info-row"><span class="info-label">💾 Total Size:</span><span class="info-value" id="mgr-size">0 MB</span></div>
+            <div class="info-row">
+                <span class="info-label">🔀 Sort:</span>
+                <select class="sort-dropdown" id="sortDrop" onchange="applySort()">
+                    <option value="manual">▼ Manual</option>
+                    <option value="size">Size (Large to Small)</option>
+                </select>
+            </div>
+            <div class="action-row">
+                <button class="action-btn" onclick="reverseOrder()">⇅ Reverse</button>
+                <button class="action-btn" onclick="resetOrder()">🔄 Reset</button>
+            </div>
+        </div>
+        <div id="manager-list"></div>
+    </div>
+
+    <div id="tab-preview" class="tab-content">
+        <div class="card info-card" style="margin-bottom:15px;">
+            <div class="info-header">👀 Delivery Preview</div>
+            <div style="font-size:0.9rem; color:var(--hint-color); text-align:center;">Files will be delivered to Telegram in this exact sequence.</div>
+        </div>
+        <div class="card" style="flex-direction:column; align-items:flex-start;" id="preview-list"></div>
+        <button class="fab-btn" id="sendBtn" onclick="sendSelected()">📤 Send Files</button>
+    </div>
+
+    <div class="multi-toolbar" id="multiToolbar">
+        <button class="tb-btn tb-move" onclick="moveMulti('top')">⬆ Move Top</button>
+        <button class="tb-btn tb-move" onclick="moveMulti('bottom')">⬇ Move Bottom</button>
+        <button class="tb-btn tb-del" onclick="removeMulti()">🗑 Remove</button>
+        <button class="tb-btn tb-cancel" onclick="clearManagerSelection()">❌ Cancel Selection</button>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" id="nav-files" onclick="switchTab('files')">📂 Files</div>
+        <div class="nav-item" id="nav-manager" onclick="switchTab('manager')">⭐ Selected</div>
+        <div class="nav-item" id="nav-preview" onclick="switchTab('preview')">👀 Preview</div>
+    </div>
 
     <script>
         const tg = window.Telegram.WebApp;
@@ -109,12 +202,29 @@
         let filteredMovies = [];
         let currentPage = 1;
         const itemsPerPage = 10;
-        let selectedIndices = new Set();
+        
+        // State Management
+        let selectedItems = []; // Array of movie objects representing the final order
+        let managerSelectedIds = new Set(); // Indices selected inside the manager tab for bulk actions
         let searchTimeout;
+
+        // Utilities
+        function parseSize(sizeStr) {
+            const units = {'B':1, 'KB':1024, 'MB':1048576, 'GB':1073741824, 'TB':1099511627776};
+            const match = sizeStr.toUpperCase().match(/([\d.]+)\s*([A-Z]+)/);
+            if(match && units[match[2]]) return parseFloat(match[1]) * units[match[2]];
+            return 0;
+        }
+
+        function formatBytes(bytes) {
+            if(bytes === 0) return '0 B';
+            const k = 1024, dm = 2, sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
 
         async function loadCloudData() {
             try {
-                // 🚀 Aggressive browser caching to make it load instantly if reopened
                 const response = await fetch(decodeURIComponent(dataUrl), { cache: "force-cache" });
                 const data = await response.json();
                 
@@ -127,31 +237,33 @@
                     rawArray = data;
                 }
                 
-                // Fast array mapping
                 movies = rawArray.map((item, idx) => {
                     const parts = item.split('|');
-                    return { t: parts[0], s: parts[1] || 'Unknown', originalIndex: idx };
+                    return { 
+                        t: parts[0], 
+                        s: parts[1] || 'Unknown', 
+                        originalIndex: idx,
+                        sizeBytes: parseSize(parts[1] || '0 B')
+                    };
                 });
                 
                 filteredMovies = movies;
-                
-                // Hide loaders, show UI
                 document.getElementById('loadingWrapper').style.display = 'none';
                 document.getElementById('paginationBar').style.display = 'flex';
-                document.getElementById('sendBtn').style.display = 'block';
-                
-                renderList();
+                document.getElementById('continueBtn').style.display = 'block';
+                renderFilesList();
             } catch (e) {
                 document.getElementById('loadingText').innerText = "❌ Error loading database.";
                 document.querySelector('.spinner').style.display = 'none';
             }
         }
 
-        // 🚀 High-Performance DOM Batch Rendering
-        function renderList() {
-            const listContainer = document.getElementById('movie-list');
-            listContainer.innerHTML = ''; 
-            
+        // ==========================
+        // TAB 1: FILES LOGIC
+        // ==========================
+        function renderFilesList() {
+            const container = document.getElementById('movie-list');
+            container.innerHTML = ''; 
             const fragment = document.createDocumentFragment();
             const start = (currentPage - 1) * itemsPerPage;
             const end = start + itemsPerPage;
@@ -159,12 +271,12 @@
 
             paginatedItems.forEach(movie => {
                 const div = document.createElement('div');
-                div.className = 'movie-item';
-                const isChecked = selectedIndices.has(movie.originalIndex.toString()) ? "checked" : "";
+                div.className = 'card';
+                const isSelected = selectedItems.some(m => m.originalIndex === movie.originalIndex);
                 
                 div.innerHTML = `
                     <label class="checkbox-container">
-                        <input type="checkbox" value="${movie.originalIndex}" class="movie-checkbox" ${isChecked} onchange="updateSendButton(this)">
+                        <input type="checkbox" value="${movie.originalIndex}" ${isSelected ? 'checked' : ''} onchange="toggleFileSelection(this)">
                         <div class="movie-info">
                             <span class="movie-title">📂 ${movie.t}</span>
                             <span class="movie-size">💾 [${movie.s}]</span>
@@ -174,61 +286,235 @@
                 fragment.appendChild(div);
             });
 
-            listContainer.appendChild(fragment);
-
-            // Update Pagination state rapidly
+            container.appendChild(fragment);
             document.getElementById('pageInfo').innerText = `Page ${currentPage} of ${Math.ceil(filteredMovies.length / itemsPerPage) || 1}`;
             document.getElementById('prevBtn').disabled = currentPage === 1;
             document.getElementById('nextBtn').disabled = end >= filteredMovies.length;
+            updateContinueButton();
         }
 
         function changePage(direction) {
             currentPage += direction;
-            renderList();
+            renderFilesList();
         }
 
-        // 🚀 Debounced Smart Search (Prevents typing lag)
         function debouncedSearch() {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 const queryText = document.getElementById('searchInput').value.toLowerCase();
-                const queryWords = queryText.split(' ').filter(word => word.trim() !== '');
-
-                if (queryWords.length === 0) {
-                    filteredMovies = movies;
-                } else {
+                const queryWords = queryText.split(' ').filter(w => w !== '');
+                if (queryWords.length === 0) filteredMovies = movies;
+                else {
                     filteredMovies = movies.filter(m => {
                         const titleLower = m.t.toLowerCase();
                         return queryWords.every(word => titleLower.includes(word));
                     });
                 }
-                
                 currentPage = 1;
-                renderList();
-            }, 150); // Waits 150ms before searching to keep keyboard smooth
+                renderFilesList();
+            }, 150);
         }
 
-        function updateSendButton(checkbox) {
-            if (checkbox) {
-                if (checkbox.checked) selectedIndices.add(checkbox.value);
-                else selectedIndices.delete(checkbox.value);
+        function toggleFileSelection(checkbox) {
+            const id = parseInt(checkbox.value);
+            if (checkbox.checked) {
+                const movie = movies.find(m => m.originalIndex === id);
+                if(movie && !selectedItems.some(m => m.originalIndex === id)) selectedItems.push(movie);
+            } else {
+                selectedItems = selectedItems.filter(m => m.originalIndex !== id);
+                managerSelectedIds.delete(id); // Clean up manager state if unchecked
             }
-            const btn = document.getElementById('sendBtn');
-            btn.innerText = selectedIndices.size > 0 ? `Send ${selectedIndices.size} Files` : "Send Selected Files";
+            updateContinueButton();
+            checkToolbarVisibility();
+        }
+
+        function updateContinueButton() {
+            document.getElementById('continueBtn').innerText = `Continue (${selectedItems.length})`;
+            document.getElementById('nav-manager').innerText = `⭐ Selected (${selectedItems.length})`;
+        }
+
+        // ==========================
+        // TAB 2: MANAGER LOGIC
+        // ==========================
+        let dragStartIndex = -1;
+
+        function renderManager() {
+            const container = document.getElementById('manager-list');
+            container.innerHTML = '';
+            
+            const totalBytes = selectedItems.reduce((acc, curr) => acc + curr.sizeBytes, 0);
+            document.getElementById('mgr-count').innerText = `${selectedItems.length} Files`;
+            document.getElementById('mgr-size').innerText = formatBytes(totalBytes);
+
+            if(selectedItems.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:var(--hint-color); margin-top:20px;">No files selected yet.</div>';
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+            selectedItems.forEach((movie, index) => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.draggable = true;
+                
+                // Drag Events
+                div.addEventListener('dragstart', (e) => { dragStartIndex = index; e.target.style.opacity = '0.5'; });
+                div.addEventListener('dragover', (e) => { e.preventDefault(); });
+                div.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if(dragStartIndex !== -1 && dragStartIndex !== index) {
+                        const item = selectedItems.splice(dragStartIndex, 1)[0];
+                        selectedItems.splice(index, 0, item);
+                        document.getElementById('sortDrop').value = 'manual';
+                        renderManager();
+                    }
+                });
+                div.addEventListener('dragend', (e) => { e.target.style.opacity = '1'; dragStartIndex = -1; });
+
+                const isChecked = managerSelectedIds.has(movie.originalIndex) ? 'checked' : '';
+
+                div.innerHTML = `
+                    <div class="drag-handle">☰</div>
+                    <label class="checkbox-container" style="margin-right:10px;">
+                        <input type="checkbox" value="${movie.originalIndex}" ${isChecked} onchange="toggleManagerSelection(this)">
+                        <div class="movie-info">
+                            <span class="movie-title">${movie.t}</span>
+                            <span class="movie-size">${movie.s}</span>
+                        </div>
+                    </label>
+                    <button class="remove-btn" onclick="removeSingle(${movie.originalIndex})">❌</button>
+                `;
+                fragment.appendChild(div);
+            });
+            container.appendChild(fragment);
+            checkToolbarVisibility();
+        }
+
+        function removeSingle(id) {
+            selectedItems = selectedItems.filter(m => m.originalIndex !== id);
+            managerSelectedIds.delete(id);
+            renderManager();
+            updateContinueButton();
+            renderFilesList(); // Update checkboxes in Files tab
+        }
+
+        function applySort() {
+            const val = document.getElementById('sortDrop').value;
+            if(val === 'size') selectedItems.sort((a, b) => b.sizeBytes - a.sizeBytes);
+            renderManager();
+        }
+
+        function reverseOrder() {
+            selectedItems.reverse();
+            document.getElementById('sortDrop').value = 'manual';
+            renderManager();
+        }
+
+        function resetOrder() {
+            selectedItems.sort((a, b) => a.originalIndex - b.originalIndex);
+            document.getElementById('sortDrop').value = 'manual';
+            renderManager();
+        }
+
+        // --- Multi-Select Toolbar Logic ---
+        function toggleManagerSelection(checkbox) {
+            const id = parseInt(checkbox.value);
+            if(checkbox.checked) managerSelectedIds.add(id);
+            else managerSelectedIds.delete(id);
+            checkToolbarVisibility();
+        }
+
+        function checkToolbarVisibility() {
+            const tb = document.getElementById('multiToolbar');
+            if(managerSelectedIds.size > 0 && document.getElementById('tab-manager').classList.contains('active')) {
+                tb.classList.add('active');
+            } else {
+                tb.classList.remove('active');
+            }
+        }
+
+        function clearManagerSelection() {
+            managerSelectedIds.clear();
+            renderManager();
+        }
+
+        function moveMulti(direction) {
+            const toMove = selectedItems.filter(m => managerSelectedIds.has(m.originalIndex));
+            const rest = selectedItems.filter(m => !managerSelectedIds.has(m.originalIndex));
+            
+            if(direction === 'top') selectedItems = [...toMove, ...rest];
+            else selectedItems = [...rest, ...toMove];
+            
+            document.getElementById('sortDrop').value = 'manual';
+            clearManagerSelection();
+        }
+
+        function removeMulti() {
+            selectedItems = selectedItems.filter(m => !managerSelectedIds.has(m.originalIndex));
+            clearManagerSelection();
+            updateContinueButton();
+            renderFilesList();
+        }
+
+
+        // ==========================
+        // TAB 3: PREVIEW LOGIC
+        // ==========================
+        function renderPreview() {
+            const container = document.getElementById('preview-list');
+            container.innerHTML = '';
+            
+            if(selectedItems.length === 0) {
+                container.innerHTML = '<div style="color:var(--hint-color); width:100%; text-align:center;">No files queued.</div>';
+                return;
+            }
+
+            let html = '';
+            selectedItems.forEach((m, idx) => {
+                html += `
+                    <div class="preview-item">
+                        <span class="preview-num">${idx + 1}️⃣</span>
+                        <span style="word-break: break-word;">${m.t} <br><span style="color:#38bdf8; font-size:0.8rem; font-weight:bold;">${m.s}</span></span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // ==========================
+        // NAVIGATION & DELIVERY
+        // ==========================
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            document.getElementById(`nav-${tabId}`).classList.add('active');
+            
+            if(tabId === 'files') renderFilesList();
+            if(tabId === 'manager') renderManager();
+            if(tabId === 'preview') renderPreview();
+            
+            checkToolbarVisibility();
         }
 
         async function sendSelected() {
-            if (selectedIndices.size === 0) {
-                tg.showAlert("Please select at least one movie!");
+            if (selectedItems.length === 0) {
+                tg.showAlert("No files queued for delivery!");
                 return;
             }
-            if (selectedIndices.size > 300) {
-                tg.showAlert("To prevent Telegram flood blocks, please select a maximum of 300 files per batch.");
+            if (selectedItems.length > 300) {
+                tg.showAlert("To prevent Telegram flood blocks, please limit to 300 files per batch.");
                 return;
             }
 
-            const indicesArray = Array.from(selectedIndices).map(Number);
+            // The Python Backend expects an array of original indices. 
+            // The order of this array is exactly the order Python will send them!
+            const indicesArray = selectedItems.map(m => m.originalIndex);
+            
             const btn = document.getElementById('sendBtn');
+            btn.innerText = "🔄 Processing...";
+            btn.disabled = true;
 
             if (indicesArray.length <= 10) {
                 const encoded = indicesArray.join('-');
@@ -236,9 +522,6 @@
                 tg.openTelegramLink(deepLink);
                 setTimeout(() => { tg.close(); }, 150); 
             } else {
-                btn.innerText = "🔄 Processing...";
-                btn.disabled = true;
-
                 let cloudId = "";
                 let prefix = "";
 
@@ -264,8 +547,8 @@
                         cloudId = parts[parts.length - 1]; 
                         prefix = "dp_";
                     } catch (e2) {
-                        tg.showAlert("Network error. Please select fewer files and try again.");
-                        btn.innerText = `Send ${selectedIndices.size} Files`;
+                        tg.showAlert("Network error. Please try again.");
+                        btn.innerText = `📤 Send Files`;
                         btn.disabled = false;
                         return;
                     }
@@ -277,6 +560,7 @@
             }
         }
 
+        // Init
         loadCloudData();
     </script>
 </body>

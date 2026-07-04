@@ -22,7 +22,6 @@
             color: var(--text-color);
             margin: 0; 
             padding: 15px; 
-            /* 🚀 FIX: Increased padding from 80px to 150px so the page scrolls completely past the floating buttons */
             padding-bottom: 150px; 
             -webkit-font-smoothing: antialiased;
             user-select: none;
@@ -89,7 +88,7 @@
         .page-btn { background: transparent; border: 1px solid var(--btn-color); color: var(--btn-color); padding: 8px 16px; border-radius: 8px; font-weight: bold;}
         .page-btn:disabled { opacity: 0.3; }
 
-        /* Floating Action Button (Continue/Send) */
+        /* Floating Action Button */
         .fab-btn {
             position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px;
             background-color: var(--btn-color); color: var(--btn-text);
@@ -201,17 +200,18 @@
         const shortId = urlParams.get('id'); 
         const dataUrl = urlParams.get('url');
         
+        // 🚀 NEW: Grabbing the user's limit from the URL! Default to 10 if missing.
+        const userLimit = parseInt(urlParams.get('limit')) || 10;
+        
         let movies = [];
         let filteredMovies = [];
         let currentPage = 1;
         const itemsPerPage = 10;
         
-        // State Management
-        let selectedItems = []; // Array of movie objects representing the final order
-        let managerSelectedIds = new Set(); // Indices selected inside the manager tab for bulk actions
+        let selectedItems = []; 
+        let managerSelectedIds = new Set(); 
         let searchTimeout;
 
-        // Utilities
         function parseSize(sizeStr) {
             const units = {'B':1, 'KB':1024, 'MB':1048576, 'GB':1073741824, 'TB':1099511627776};
             const match = sizeStr.toUpperCase().match(/([\d.]+)\s*([A-Z]+)/);
@@ -261,9 +261,6 @@
             }
         }
 
-        // ==========================
-        // TAB 1: FILES LOGIC
-        // ==========================
         function renderFilesList() {
             const container = document.getElementById('movie-list');
             container.innerHTML = ''; 
@@ -318,35 +315,38 @@
             }, 150);
         }
 
+        // 🚀 THE NEW CHECKBOX VIP ENFORCER
         function toggleFileSelection(checkbox) {
             const id = parseInt(checkbox.value);
             if (checkbox.checked) {
+                // If they are trying to select more than their tier allows:
+                if (selectedItems.length >= userLimit) {
+                    checkbox.checked = false; // Immediately uncheck the box visually
+                    tg.showAlert(`⚠️ VIP Upgrade Required!\n\nYour current plan limits you to selecting a maximum of ${userLimit} files at once.\n\nPlease upgrade to a VIP plan to unlock Unlimited Batch selections!`);
+                    return;
+                }
+                
                 const movie = movies.find(m => m.originalIndex === id);
                 if(movie && !selectedItems.some(m => m.originalIndex === id)) selectedItems.push(movie);
             } else {
                 selectedItems = selectedItems.filter(m => m.originalIndex !== id);
-                managerSelectedIds.delete(id); // Clean up manager state if unchecked
+                managerSelectedIds.delete(id); 
             }
             updateContinueButton();
             checkToolbarVisibility();
         }
 
         function updateContinueButton() {
-            document.getElementById('continueBtn').innerText = `Continue (${selectedItems.length})`;
+            document.getElementById('continueBtn').innerText = `Continue (${selectedItems.length} / ${userLimit})`;
             document.getElementById('nav-manager').innerText = `⭐ Selected (${selectedItems.length})`;
         }
-
-        // ==========================
-        // TAB 2: MANAGER LOGIC
-        // ==========================
-        let dragStartIndex = -1;
 
         function renderManager() {
             const container = document.getElementById('manager-list');
             container.innerHTML = '';
             
             const totalBytes = selectedItems.reduce((acc, curr) => acc + curr.sizeBytes, 0);
-            document.getElementById('mgr-count').innerText = `${selectedItems.length} Files`;
+            document.getElementById('mgr-count').innerText = `${selectedItems.length} / ${userLimit} Files`;
             document.getElementById('mgr-size').innerText = formatBytes(totalBytes);
 
             if(selectedItems.length === 0) {
@@ -360,7 +360,6 @@
                 div.className = 'card';
                 div.draggable = true;
                 
-                // Drag Events
                 div.addEventListener('dragstart', (e) => { dragStartIndex = index; e.target.style.opacity = '0.5'; });
                 div.addEventListener('dragover', (e) => { e.preventDefault(); });
                 div.addEventListener('drop', (e) => {
@@ -398,7 +397,7 @@
             managerSelectedIds.delete(id);
             renderManager();
             updateContinueButton();
-            renderFilesList(); // Update checkboxes in Files tab
+            renderFilesList(); 
         }
 
         function applySort() {
@@ -419,7 +418,6 @@
             renderManager();
         }
 
-        // --- Multi-Select Toolbar Logic ---
         function toggleManagerSelection(checkbox) {
             const id = parseInt(checkbox.value);
             if(checkbox.checked) managerSelectedIds.add(id);
@@ -459,10 +457,6 @@
             renderFilesList();
         }
 
-
-        // ==========================
-        // TAB 3: PREVIEW LOGIC
-        // ==========================
         function renderPreview() {
             const container = document.getElementById('preview-list');
             container.innerHTML = '';
@@ -484,9 +478,6 @@
             container.innerHTML = html;
         }
 
-        // ==========================
-        // NAVIGATION & DELIVERY
-        // ==========================
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -506,13 +497,12 @@
                 tg.showAlert("No files queued for delivery!");
                 return;
             }
-            if (selectedItems.length > 300) {
-                tg.showAlert("To prevent Telegram flood blocks, please limit to 300 files per batch.");
+            // 🚀 EXTRA SAFETY: Secondary check on the send button
+            if (selectedItems.length > userLimit) {
+                tg.showAlert(`You exceeded your limit of ${userLimit} files. Please remove some files or upgrade to VIP.`);
                 return;
             }
 
-            // The Python Backend expects an array of original indices. 
-            // The order of this array is exactly the order Python will send them!
             const indicesArray = selectedItems.map(m => m.originalIndex);
             
             const btn = document.getElementById('sendBtn');

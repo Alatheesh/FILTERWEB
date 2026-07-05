@@ -15,11 +15,17 @@
     <!-- External Libraries -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+    <!-- 🚀 INSTANT THEME SWITCHER -->
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const userTier = urlParams.get('tier') || 'free'; 
+        document.documentElement.setAttribute('data-theme', userTier);
+    </script>
 </head>
-<!-- The theme is injected dynamically into the body tag by app.js -->
 <body>
 
-    <!-- Ambient Glowing Backgrounds (Hidden by default, shown for VIPs) -->
+    <!-- Ambient Glowing Backgrounds (Hidden globally, shown by CSS for VIPs) -->
     <div id="premium-blobs">
         <div class="ambient-blob blob-1"></div>
         <div class="ambient-blob blob-2"></div>

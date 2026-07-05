@@ -516,7 +516,8 @@
                 setTimeout(() => { tg.close(); }, 150); 
             } else {
                 let cloudId = "";
-                let prefix = "";
+                // 🐛 FIX: Left prefix completely blank. The bot doesn't need it!
+                let prefix = ""; 
 
                 try {
                     const response = await fetch("https://api.npoint.io/", {
@@ -526,7 +527,6 @@
                     });
                     const data = await response.json();
                     cloudId = data.id;
-                    prefix = "np"; // 🐛 FIX: Removed the underscore
                 } catch (e) {
                     try {
                         const response = await fetch("https://dpaste.com/api/v2/", {
@@ -535,11 +535,9 @@
                             body: "content=" + encodeURIComponent(JSON.stringify(indicesArray)) + "&syntax=json"
                         });
                         const urlText = await response.text();
-                        // 🐛 FIX: Added regex to strip potential trailing slashes before splitting
                         const cleanUrl = urlText.trim().replace(".txt", "").replace(/\/$/, ""); 
                         const parts = cleanUrl.split('/');
                         cloudId = parts[parts.length - 1]; 
-                        prefix = "dp"; // 🐛 FIX: Removed the underscore
                     } catch (e2) {
                         tg.showAlert("Network error. Please try again.");
                         btn.innerText = `📤 Send Files`;
@@ -548,7 +546,8 @@
                     }
                 }
 
-                const deepLink = `https://t.me/${botUsername}?start=blkc_${shortId}_${prefix}${cloudId}`;
+                // This will now generate a clean link like: ?start=blkc_12345_7X6D3BV85
+                const deepLink = `https://t.me/${botUsername}?start=blkc_${shortId}_${cloudId}`;
                 tg.openTelegramLink(deepLink);
                 setTimeout(() => { tg.close(); }, 150); 
             }

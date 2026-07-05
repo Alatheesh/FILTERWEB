@@ -497,15 +497,16 @@
                 tg.showAlert("No files queued for delivery!");
                 return;
             }
-            if (selectedItems.length > 300) {
-                tg.showAlert("To prevent Telegram flood blocks, please limit to 300 files per batch.");
+            // 🚀 EXTRA SAFETY: Secondary check on the send button
+            if (selectedItems.length > userLimit) {
+                tg.showAlert(`You exceeded your limit of ${userLimit} files. Please remove some files or upgrade to VIP.`);
                 return;
             }
 
             const indicesArray = selectedItems.map(m => m.originalIndex);
             
             const btn = document.getElementById('sendBtn');
-            btn.innerText = "🔄 Uploading to Cloud...";
+            btn.innerText = "🔄 Processing...";
             btn.disabled = true;
 
             if (indicesArray.length <= 10) {
@@ -518,30 +519,28 @@
                 let prefix = "";
 
                 try {
-                    // 🚀 NEW: Bytebin (Extremely reliable, no firewall issues)
-                    const response = await fetch("https://bytebin.lucko.me/post", {
+                    const response = await fetch("https://api.npoint.io/", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(indicesArray)
                     });
-                    if (!response.ok) throw new Error("Bytebin Failed");
                     const data = await response.json();
-                    cloudId = data.key;
-                    prefix = "bb_";
+                    cloudId = data.id;
+                    prefix = "np_";
                 } catch (e) {
                     try {
-                        // BACKUP: Npoint
-                        const response = await fetch("https://api.npoint.io/", {
+                        const response = await fetch("https://dpaste.com/api/v2/", {
                             method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(indicesArray)
+                            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                            body: "content=" + encodeURIComponent(JSON.stringify(indicesArray)) + "&syntax=json"
                         });
-                        if (!response.ok) throw new Error("Npoint Failed");
-                        const data = await response.json();
-                        cloudId = data.id;
-                        prefix = "np_";
+                        const urlText = await response.text();
+                        const cleanUrl = urlText.trim().replace(".txt", "");
+                        const parts = cleanUrl.split('/');
+                        cloudId = parts[parts.length - 1]; 
+                        prefix = "dp_";
                     } catch (e2) {
-                        tg.showAlert("❌ Cloud Upload Failed. Please check your network and try again.");
+                        tg.showAlert("Network error. Please try again.");
                         btn.innerText = `📤 Send Files`;
                         btn.disabled = false;
                         return;

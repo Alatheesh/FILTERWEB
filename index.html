@@ -24,50 +24,59 @@
             --btn-color: var(--tg-theme-button-color, #2b9eb3);
             --btn-text: var(--tg-theme-button-text-color, #ffffff);
             --danger-color: #ef4444;
+            --glass-border: rgba(255,255,255,0.1);
         }
-        body { font-family: -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 15px; padding-bottom: 150px; user-select: none; overflow-x: hidden; }
-        .search-box { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 12px; border: 1px solid var(--hint-color); background-color: var(--sec-bg-color); color: var(--text-color); font-size: 1rem; box-sizing: border-box; outline: none; }
+        body { font-family: -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; padding-bottom: 180px; user-select: none; overflow-x: hidden; }
+        
+        .app-title { font-size: 1.5rem; font-weight: 800; color: var(--btn-color); margin: 0; }
+        .account-btn { background: var(--sec-bg-color); border: 2px solid var(--btn-color); color: var(--text-color); padding: 8px 18px; border-radius: 20px; font-weight: bold; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 8px; }
+        
+        .search-box { width: 100%; padding: 16px; margin-bottom: 20px; border-radius: 16px; border: 1px solid var(--hint-color); background-color: var(--sec-bg-color); color: var(--text-color); font-size: 1.05rem; box-sizing: border-box; outline: none; }
         .search-box:focus { border-color: var(--btn-color); }
         
-        /* ✨ FLEXBOX FIXES APPLIED TO CARDS ✨ */
-        .card { background-color: var(--sec-bg-color); margin-bottom: 10px; padding: 14px; border-radius: 12px; display: flex; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); gap: 10px; width: 100%; box-sizing: border-box; }
+        /* ✨ SPACIOUS CARDS */
+        .card { background-color: var(--sec-bg-color); margin-bottom: 15px; padding: 18px; border-radius: 16px; display: flex; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15); gap: 12px; width: 100%; box-sizing: border-box; }
         .checkbox-container { display: flex; align-items: center; width: 100%; cursor: pointer; flex: 1; min-width: 0; }
         .movie-info { display: flex; flex-direction: column; flex: 1; overflow: hidden; min-width: 0; }
-        .drag-handle { margin-right: 5px; color: var(--hint-color); font-size: 1.2rem; cursor: grab; padding: 5px; flex-shrink: 0; }
-        .remove-btn { color: var(--danger-color); font-size: 1.2rem; background: none; border: none; padding: 5px 10px; cursor: pointer; font-weight: bold; flex-shrink: 0; }
+        .drag-handle { margin-right: 8px; color: var(--hint-color); font-size: 1.4rem; cursor: grab; padding: 5px; flex-shrink: 0; }
+        .remove-btn { color: var(--danger-color); font-size: 1.4rem; background: none; border: none; padding: 5px 10px; cursor: pointer; font-weight: bold; flex-shrink: 0; }
+        .movie-title { font-size: 1rem; font-weight: 500; word-break: break-word; line-height: 1.5; margin-bottom: 6px; }
         
-        /* 🚀 NEW: Word Wrapping for Full File Names */
-        .movie-title { font-size: 0.95rem; font-weight: 500; word-break: break-word; line-height: 1.4; margin-bottom: 4px; }
-        
-        .info-card { border: 1px solid var(--btn-color); flex-direction: column; align-items: flex-start; margin-bottom: 20px; background: rgba(43, 158, 179, 0.05); }
-        .info-header { font-size: 1.1rem; font-weight: bold; margin-bottom: 10px; color: var(--btn-color); width: 100%; text-align: center; border-bottom: 1px solid var(--hint-color); padding-bottom: 8px;}
-        .info-row { display: flex; justify-content: space-between; width: 100%; margin-bottom: 8px; font-size: 0.95rem; }
+        .info-card { border: 2px solid var(--btn-color); flex-direction: column; align-items: flex-start; margin-bottom: 25px; background: rgba(43, 158, 179, 0.05); }
+        .info-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; color: var(--btn-color); width: 100%; text-align: center; border-bottom: 1px solid var(--hint-color); padding-bottom: 10px;}
+        .info-row { display: flex; justify-content: space-between; width: 100%; margin-bottom: 10px; font-size: 1rem; }
         .info-label { color: var(--hint-color); font-weight: 500;}
         .info-value { font-weight: bold; }
-        input[type="checkbox"] { appearance: none; width: 22px; height: 22px; border: 2px solid var(--btn-color); border-radius: 6px; position: relative; outline: none; flex-shrink: 0; }
+        
+        input[type="checkbox"] { appearance: none; width: 24px; height: 24px; border: 2px solid var(--btn-color); border-radius: 6px; position: relative; outline: none; flex-shrink: 0; }
         input[type="checkbox"]:checked { background-color: var(--btn-color); }
-        input[type="checkbox"]:checked::after { content: "✓"; position: absolute; color: white; font-size: 14px; font-weight: bold; left: 4px; top: 0px; }
-        .movie-size { font-size: 0.8rem; color: #38bdf8; margin-top: 4px; font-weight: bold; }
-        select.sort-dropdown { background: var(--bg-color); color: var(--text-color); border: 1px solid var(--hint-color); padding: 4px 8px; border-radius: 6px; outline: none; font-weight: bold; }
-        .action-row { display: flex; justify-content: space-between; width: 100%; margin-top: 10px; gap: 10px; }
-        .action-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--hint-color); background: var(--sec-bg-color); color: var(--text-color); font-weight: bold; cursor: pointer;}
-        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; margin-bottom: 20px;}
-        .page-btn { background: transparent; border: 1px solid var(--btn-color); color: var(--btn-color); padding: 8px 16px; border-radius: 8px; font-weight: bold;}
+        input[type="checkbox"]:checked::after { content: "✓"; position: absolute; color: white; font-size: 16px; font-weight: bold; left: 4px; top: 0px; }
+        .movie-size { font-size: 0.85rem; color: #38bdf8; margin-top: 4px; font-weight: bold; }
+        
+        select.sort-dropdown { background: var(--bg-color); color: var(--text-color); border: 1px solid var(--hint-color); padding: 6px 10px; border-radius: 8px; outline: none; font-weight: bold; font-size: 0.95rem; }
+        .action-row { display: flex; justify-content: space-between; width: 100%; margin-top: 15px; gap: 12px; }
+        .action-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--hint-color); background: var(--sec-bg-color); color: var(--text-color); font-weight: bold; cursor: pointer; font-size:0.95rem;}
+        
+        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; margin-bottom: 25px;}
+        .page-btn { background: transparent; border: 2px solid var(--btn-color); color: var(--btn-color); padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 0.95rem;}
         .page-btn:disabled { opacity: 0.3; }
-        .fab-btn { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background-color: var(--btn-color); color: var(--btn-text); border: none; padding: 14px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.4); cursor: pointer; z-index: 90; }
+        
+        .fab-btn { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background-color: var(--btn-color); color: var(--btn-text); border: none; padding: 16px; border-radius: 16px; font-size: 1.1rem; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.4); cursor: pointer; z-index: 90; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--sec-bg-color); display: flex; border-top: 1px solid rgba(0,0,0,0.2); z-index: 100; }
-        .nav-item { flex: 1; padding: 15px 0; text-align: center; color: var(--hint-color); font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+        .nav-item { flex: 1; padding: 16px 0; text-align: center; color: var(--hint-color); font-weight: bold; font-size: 0.95rem; cursor: pointer; transition: 0.2s; }
         .nav-item.active { color: var(--btn-color); border-top: 3px solid var(--btn-color); background: rgba(43, 158, 179, 0.1); }
-        .multi-toolbar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--sec-bg-color); display: flex; flex-wrap: wrap; padding: 10px; gap: 8px; border-top: 1px solid var(--btn-color); transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 110; }
+        
+        .multi-toolbar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--sec-bg-color); display: flex; flex-wrap: wrap; padding: 12px; gap: 10px; border-top: 1px solid var(--btn-color); transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 110; }
         .multi-toolbar.active { transform: translateY(0); }
-        .tb-btn { flex: 1 1 45%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; font-size: 0.9rem; color: white;}
+        .tb-btn { flex: 1 1 45%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; font-size: 0.95rem; color: white;}
         .tb-move { background: var(--btn-color); }
         .tb-del { background: var(--danger-color); }
         .tb-cancel { background: var(--hint-color); flex: 1 1 100%;}
-        .spinner { width: 40px; height: 40px; border: 4px solid var(--sec-bg-color); border-top: 4px solid var(--btn-color); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 40px auto 10px auto; }
-        .loading-text { text-align: center; color: var(--hint-color); font-weight: 500; }
-        .preview-item { font-size: 0.95rem; margin-bottom: 12px; display: flex; align-items: flex-start;}
-        .preview-num { color: var(--btn-color); font-weight: bold; width: 30px; flex-shrink: 0;}
+        
+        .spinner { width: 45px; height: 45px; border: 4px solid var(--sec-bg-color); border-top: 4px solid var(--btn-color); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 40px auto 15px auto; }
+        .loading-text { text-align: center; color: var(--hint-color); font-weight: 500; font-size: 1.05rem; }
+        .preview-item { font-size: 1rem; margin-bottom: 15px; display: flex; align-items: flex-start;}
+        .preview-num { color: var(--btn-color); font-weight: bold; width: 35px; flex-shrink: 0;}
     </style>
 
     <!-- ========================================== -->
@@ -85,97 +94,117 @@
             --accent-color: #38bdf8;
             --danger-color: #ef4444;
         }
-        body { font-family: -apple-system, sans-serif; background-color: var(--bg-dark); color: var(--text-main); margin: 0; padding: 15px; padding-bottom: 150px; user-select: none; overflow-x: hidden; }
-        .search-box { width: 100%; padding: 16px; margin-bottom: 20px; border-radius: 16px; border: 1px solid var(--glass-border); background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: var(--text-main); font-size: 1rem; box-sizing: border-box; outline: none; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        body { font-family: -apple-system, sans-serif; background-color: var(--bg-dark); color: var(--text-main); margin: 0; padding: 20px; padding-bottom: 190px; user-select: none; overflow-x: hidden; }
+        
+        .app-title { font-size: 1.6rem; font-weight: 900; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
+        .account-btn { background: var(--glass-bg); border: 1px solid rgba(56, 189, 248, 0.4); color: white; padding: 10px 20px; border-radius: 20px; font-weight: 800; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); display: flex; align-items: center; gap: 8px; backdrop-filter: blur(10px); transition: 0.2s; }
+        .account-btn:active { transform: scale(0.95); }
+
+        .search-box { width: 100%; padding: 18px; margin-bottom: 25px; border-radius: 16px; border: 1px solid var(--glass-border); background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: var(--text-main); font-size: 1.05rem; box-sizing: border-box; outline: none; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
         .search-box:focus { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.07); box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); }
         .search-box::placeholder { color: var(--text-muted); }
         
-        /* ✨ FLEXBOX FIXES APPLIED TO PREMIUM CARDS ✨ */
-        .card { background: var(--glass-bg); margin-bottom: 12px; padding: 16px; border-radius: 16px; display: flex; align-items: center; border: 1px solid var(--glass-border); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s; gap: 10px; width: 100%; box-sizing: border-box; }
+        /* ✨ SPACIOUS PREMIUM CARDS */
+        .card { background: var(--glass-bg); margin-bottom: 15px; padding: 20px; border-radius: 18px; display: flex; align-items: center; border: 1px solid var(--glass-border); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s; gap: 12px; width: 100%; box-sizing: border-box; }
         .card:active { transform: scale(0.97); background: var(--glass-highlight); }
         .checkbox-container { display: flex; align-items: center; width: 100%; cursor: pointer; flex: 1; min-width: 0; }
         .movie-info { display: flex; flex-direction: column; flex: 1; overflow: hidden; min-width: 0; }
-        .drag-handle { margin-right: 5px; color: var(--text-muted); font-size: 1.2rem; cursor: grab; padding: 5px; flex-shrink: 0; }
-        .remove-btn { color: var(--danger-color); font-size: 1.2rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 5px 10px; cursor: pointer; font-weight: bold; border-radius: 8px; transition: 0.2s; flex-shrink: 0; }
+        .drag-handle { margin-right: 8px; color: var(--text-muted); font-size: 1.4rem; cursor: grab; padding: 5px; flex-shrink: 0; }
+        .remove-btn { color: var(--danger-color); font-size: 1.4rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 6px 12px; cursor: pointer; font-weight: bold; border-radius: 10px; transition: 0.2s; flex-shrink: 0; }
         .remove-btn:active { background: var(--danger-color); color: white;}
-        
-        /* 🚀 NEW: Word Wrapping for Full File Names */
-        .movie-title { font-size: 0.95rem; font-weight: 600; word-break: break-word; letter-spacing: 0.3px; line-height: 1.4; margin-bottom: 4px; }
+        .movie-title { font-size: 1rem; font-weight: 600; word-break: break-word; letter-spacing: 0.3px; line-height: 1.5; margin-bottom: 6px; }
 
-        .info-card { flex-direction: column; align-items: flex-start; margin-bottom: 25px; background: linear-gradient(145deg, rgba(56,189,248,0.05) 0%, rgba(139,92,246,0.05) 100%); border: 1px solid rgba(56, 189, 248, 0.2); }
-        .info-header { font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; width: 100%; text-align: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px;}
-        .info-row { display: flex; justify-content: space-between; width: 100%; margin-bottom: 10px; font-size: 0.95rem; }
+        .info-card { flex-direction: column; align-items: flex-start; margin-bottom: 30px; padding: 22px; background: linear-gradient(145deg, rgba(56,189,248,0.05) 0%, rgba(139,92,246,0.05) 100%); border: 1px solid rgba(56, 189, 248, 0.2); }
+        .info-header { font-size: 1.25rem; font-weight: 800; margin-bottom: 15px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; width: 100%; text-align: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px;}
+        .info-row { display: flex; justify-content: space-between; width: 100%; margin-bottom: 12px; font-size: 1rem; }
         .info-label { color: var(--text-muted); font-weight: 500;}
         .info-value { font-weight: 700; }
-        input[type="checkbox"] { appearance: none; width: 24px; height: 24px; border: 2px solid var(--text-muted); border-radius: 8px; position: relative; outline: none; flex-shrink: 0; transition: all 0.3s ease; background: rgba(0,0,0,0.2); }
-        input[type="checkbox"]:checked { background: var(--accent-gradient); border-color: transparent; box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
-        input[type="checkbox"]:checked::after { content: "✓"; position: absolute; color: white; font-size: 15px; font-weight: 900; left: 5px; top: 1px; }
-        .movie-size { font-size: 0.8rem; color: var(--accent-color); margin-top: 5px; font-weight: 700; }
-        select.sort-dropdown { background: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--glass-border); padding: 6px 10px; border-radius: 8px; outline: none; font-weight: 600; backdrop-filter: blur(10px); }
-        .action-row { display: flex; justify-content: space-between; width: 100%; margin-top: 15px; gap: 12px; }
-        .action-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); font-weight: 600; cursor: pointer; transition: 0.2s;}
+        
+        input[type="checkbox"] { appearance: none; width: 26px; height: 26px; border: 2px solid var(--text-muted); border-radius: 8px; position: relative; outline: none; flex-shrink: 0; transition: all 0.3s ease; background: rgba(0,0,0,0.2); }
+        input[type="checkbox"]:checked { background: var(--accent-gradient); border-color: transparent; box-shadow: 0 0 12px rgba(56, 189, 248, 0.4); }
+        input[type="checkbox"]:checked::after { content: "✓"; position: absolute; color: white; font-size: 16px; font-weight: 900; left: 5px; top: 2px; }
+        .movie-size { font-size: 0.85rem; color: var(--accent-color); margin-top: 5px; font-weight: 700; }
+        
+        select.sort-dropdown { background: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--glass-border); padding: 8px 12px; border-radius: 10px; outline: none; font-weight: 700; font-size: 0.95rem; backdrop-filter: blur(10px); }
+        .action-row { display: flex; justify-content: space-between; width: 100%; margin-top: 20px; gap: 15px; }
+        .action-btn { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); font-weight: 700; cursor: pointer; transition: 0.2s;}
         .action-btn:active { background: rgba(255,255,255,0.1); }
-        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; margin-bottom: 25px;}
-        .page-btn { background: var(--glass-bg); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 10px 18px; border-radius: 10px; font-weight: 700; backdrop-filter: blur(5px);}
+        
+        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; margin-bottom: 30px;}
+        .page-btn { background: var(--glass-bg); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 12px 20px; border-radius: 12px; font-weight: 800; backdrop-filter: blur(5px);}
         .page-btn:disabled { opacity: 0.3; border-color: var(--text-muted); color: var(--text-muted); }
-        .fab-btn { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 380px; background: var(--accent-gradient); color: white; border: none; padding: 16px; border-radius: 16px; font-size: 1.1rem; font-weight: 800; box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4); cursor: pointer; z-index: 90; transition: transform 0.2s, box-shadow 0.2s; }
+        
+        .fab-btn { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 380px; background: var(--accent-gradient); color: white; border: none; padding: 18px; border-radius: 18px; font-size: 1.15rem; font-weight: 800; box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4); cursor: pointer; z-index: 90; transition: transform 0.2s, box-shadow 0.2s; }
         .fab-btn:active { transform: translateX(-50%) scale(0.96); box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3); }
-        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; border: 1px solid var(--glass-border); z-index: 100; border-radius: 24px; padding: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .nav-item { flex: 1; padding: 12px 0; text-align: center; color: var(--text-muted); font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; border-radius: 18px; }
+        
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; border: 1px solid var(--glass-border); z-index: 100; border-radius: 24px; padding: 6px; box-shadow: 0 10px 35px rgba(0,0,0,0.5); }
+        .nav-item { flex: 1; padding: 14px 0; text-align: center; color: var(--text-muted); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.3s ease; border-radius: 18px; }
         .nav-item.active { color: white; background: rgba(255,255,255,0.1); box-shadow: inset 0 0 10px rgba(255,255,255,0.05); }
-        .multi-toolbar { position: fixed; bottom: 90px; left: 50%; transform: translate(-50%, 150%); width: 90%; max-width: 400px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; flex-wrap: wrap; padding: 12px; gap: 10px; border-radius: 20px; border: 1px solid rgba(56, 189, 248, 0.3); box-shadow: 0 10px 40px rgba(0,0,0,0.6); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 110; }
+        
+        .multi-toolbar { position: fixed; bottom: 90px; left: 50%; transform: translate(-50%, 150%); width: 90%; max-width: 400px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; flex-wrap: wrap; padding: 15px; gap: 12px; border-radius: 20px; border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 10px 40px rgba(0,0,0,0.6); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 110; }
         .multi-toolbar.active { transform: translate(-50%, 0); }
-        .tb-btn { flex: 1 1 45%; padding: 12px; border-radius: 12px; border: none; font-weight: 700; font-size: 0.9rem; color: white;}
+        .tb-btn { flex: 1 1 45%; padding: 14px; border-radius: 12px; border: none; font-weight: 800; font-size: 0.95rem; color: white;}
         .tb-move { background: var(--glass-highlight); border: 1px solid var(--glass-border); }
         .tb-del { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5;}
         .tb-cancel { background: var(--accent-gradient); flex: 1 1 100%; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);}
-        .spinner { width: 45px; height: 45px; border: 4px solid var(--glass-bg); border-top: 4px solid var(--accent-color); border-radius: 50%; animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite; margin: 50px auto 15px auto; }
+        
+        .spinner { width: 50px; height: 50px; border: 4px solid var(--glass-bg); border-top: 4px solid var(--accent-color); border-radius: 50%; animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite; margin: 50px auto 15px auto; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        .loading-text { text-align: center; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px;}
-        .preview-item { font-size: 0.95rem; margin-bottom: 14px; display: flex; align-items: flex-start;}
-        .preview-num { color: var(--accent-color); font-weight: 800; width: 35px; flex-shrink: 0;}
+        .loading-text { text-align: center; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; font-size: 1.05rem;}
+        .preview-item { font-size: 1.05rem; margin-bottom: 16px; display: flex; align-items: flex-start;}
+        .preview-num { color: var(--accent-color); font-weight: 900; width: 40px; flex-shrink: 0;}
     </style>
 
-    <!-- Global Layout Elements & Modal Styles -->
+    <!-- Global Layout Elements, Headers & Modal Styles -->
     <style>
+        /* Top Header Area */
+        .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border); }
+        
+        /* Animated Join Channel Banner */
+        .channel-banner { background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); border-radius: 18px; padding: 20px; display: flex; align-items: center; justify-content: space-between; color: white; box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4); margin-top: 25px; margin-bottom: 10px; cursor: pointer; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.2); }
+        .channel-banner:active { transform: scale(0.96); }
+        .cb-content { display: flex; flex-direction: column; gap: 6px; }
+        .cb-title { font-size: 1.15rem; font-weight: 900; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .cb-subtitle { font-size: 0.9rem; opacity: 0.9; font-weight: 600; }
+        .cb-icon { font-size: 2.2rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); animation: floatBannerIcon 3s ease-in-out infinite; }
+        @keyframes floatBannerIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
         .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         .sortable-ghost { opacity: 0.3; background: rgba(255,255,255,0.1); transform: scale(0.98); }
         
-        /* The glowing blobs (Only visible for VIPs) */
         #premium-blobs { display: none; }
         .ambient-blob { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -1; opacity: 0.6; animation: floatBlob 10s ease-in-out infinite alternate; }
         .blob-1 { top: -10%; left: -20%; width: 300px; height: 300px; background: rgba(56, 189, 248, 0.4); }
         .blob-2 { bottom: 10%; right: -20%; width: 250px; height: 250px; background: rgba(139, 92, 246, 0.4); animation-delay: -5s; }
         @keyframes floatBlob { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(30px) scale(1.1); } }
 
-        /* 💎 CUSTOM VIP MODAL STYLES */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            z-index: 9999; display: none; justify-content: center; align-items: center;
-            opacity: 0; transition: opacity 0.3s ease;
-        }
+        /* 👑 ALL MODALS STYLES */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 9999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; padding: 20px; }
         .modal-overlay.active { display: flex; opacity: 1; }
-        .glass-modal {
-            background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 20px rgba(56, 189, 248, 0.1);
-            border-radius: 24px; padding: 25px 20px; width: 85%; max-width: 320px;
-            text-align: center; transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+        .glass-modal { background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 20px 50px rgba(0,0,0,0.7), inset 0 0 20px rgba(56, 189, 248, 0.1); border-radius: 24px; padding: 30px 25px; width: 100%; max-width: 350px; text-align: center; transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); box-sizing: border-box; }
         .modal-overlay.active .glass-modal { transform: scale(1); }
-        .modal-icon { font-size: 3.5rem; margin-bottom: 5px; animation: floatIcon 2s ease-in-out infinite; }
+        .modal-icon { font-size: 3.5rem; margin-bottom: 10px; animation: floatIcon 2s ease-in-out infinite; }
         @keyframes floatIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .modal-title { font-size: 1.4rem; margin: 0 0 10px 0; background: linear-gradient(135deg, #38bdf8 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .modal-desc { font-size: 0.95rem; color: #94a3b8; margin: 0 0 15px 0; line-height: 1.5; }
-        .modal-actions { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
-        .modal-btn { padding: 14px; border-radius: 14px; font-weight: 800; font-size: 1rem; cursor: pointer; border: none; transition: 0.2s; }
-        .btn-upgrade { background: linear-gradient(135deg, #38bdf8 0%, #8b5cf6 100%); color: white; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4); }
-        .btn-upgrade:active { transform: scale(0.96); box-shadow: 0 2px 10px rgba(56, 189, 248, 0.3); }
-        .btn-close { background: rgba(255,255,255,0.05); color: #f8fafc; border: 1px solid rgba(255,255,255,0.1); }
-        .btn-close:active { background: rgba(255,255,255,0.15); }
+        .modal-title { font-size: 1.5rem; margin: 0 0 10px 0; color: #38bdf8; font-weight: 900;}
+        .modal-desc { font-size: 1rem; color: #94a3b8; margin: 0 0 15px 0; line-height: 1.5; }
+        
+        .modal-actions { display: flex; flex-direction: column; gap: 12px; margin-top: 25px; }
+        .modal-btn { padding: 16px; border-radius: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; border: none; transition: 0.2s; }
+        .btn-upgrade { background: linear-gradient(135deg, #38bdf8 0%, #8b5cf6 100%); color: white; box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4); }
+        .btn-upgrade:active { transform: scale(0.96); }
+        .btn-close { background: rgba(255,255,255,0.1); color: #f8fafc; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-close:active { background: rgba(255,255,255,0.2); }
+
+        /* 👤 ACCOUNT GRID INSIDE MODAL */
+        .account-details { display: grid; grid-template-columns: 1fr; gap: 12px; text-align: left; background: rgba(0,0,0,0.4); padding: 18px; border-radius: 16px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        .acc-row { display: flex; justify-content: space-between; font-size: 0.95rem; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 10px; align-items: center; }
+        .acc-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .acc-label { color: #94a3b8; font-weight: 600; }
+        .acc-value { font-weight: 800; color: white; text-align: right; }
+        .acc-value.highlight { color: #38bdf8; }
     </style>
 
     <!-- 🚀 THE THEME SWITCHER LOGIC -->
@@ -183,13 +212,9 @@
         const urlParams = new URLSearchParams(window.location.search);
         const userTier = urlParams.get('tier') || 'free'; 
 
-        // If the user is Premium, delete the free CSS and show the blobs. 
-        // If they are Free, delete the Premium CSS.
         if (userTier === 'premium') {
             document.getElementById('theme-free').remove();
-            document.addEventListener('DOMContentLoaded', () => {
-                document.getElementById('premium-blobs').style.display = 'block';
-            });
+            document.addEventListener('DOMContentLoaded', () => { document.getElementById('premium-blobs').style.display = 'block'; });
         } else {
             document.getElementById('theme-premium').remove();
         }
@@ -197,27 +222,50 @@
 </head>
 <body>
 
-    <!-- Ambient Glowing Backgrounds (Hidden by default, shown for VIPs) -->
+    <!-- Ambient Glowing Backgrounds -->
     <div id="premium-blobs">
         <div class="ambient-blob blob-1"></div>
         <div class="ambient-blob blob-2"></div>
     </div>
 
+    <!-- 👤 TOP HEADER -->
+    <div class="top-header">
+        <h2 class="app-title">📦 Delivery</h2>
+        <button class="account-btn" onclick="openAccountModal()">
+            <span>👤 Account</span>
+        </button>
+    </div>
+
+    <!-- 📂 TAB 1: CLOUD FILES -->
     <div id="tab-files" class="tab-content active">
         <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search your files..." onkeyup="debouncedSearch()">
+        
         <div id="loadingWrapper">
             <div class="spinner"></div>
             <div class="loading-text" id="loadingText">Syncing Secure Cloud...</div>
         </div>
+        
         <div id="movie-list"></div>
+        
         <div class="pagination" id="paginationBar" style="display: none;">
             <button class="page-btn" id="prevBtn" onclick="changePage(-1)">◀ Prev</button>
             <span class="page-info" id="pageInfo" style="color:var(--text-muted); font-weight:bold;">Page 1</span>
             <button class="page-btn" id="nextBtn" onclick="changePage(1)">Next ▶</button>
         </div>
+        
+        <!-- 🚀 JOIN CHANNEL BANNER -->
+        <div class="channel-banner" id="joinChannelBtn">
+            <div class="cb-content">
+                <span class="cb-title">✨ JOIN MAIN CHANNEL</span>
+                <span class="cb-subtitle">Get latest updates & requests!</span>
+            </div>
+            <div class="cb-icon">🚀</div>
+        </div>
+        
         <button class="fab-btn" id="continueBtn" style="display:none;" onclick="switchTab('manager')">Continue (0)</button>
     </div>
 
+    <!-- ⭐ TAB 2: QUEUE MANAGER -->
     <div id="tab-manager" class="tab-content">
         <div class="card info-card">
             <div class="info-header">⭐ Collection Manager</div>
@@ -236,17 +284,28 @@
             </div>
         </div>
         <div id="manager-list"></div>
+        
+        <!-- 🚀 JOIN CHANNEL BANNER -->
+        <div class="channel-banner" id="joinChannelBtn2">
+            <div class="cb-content">
+                <span class="cb-title">✨ JOIN MAIN CHANNEL</span>
+                <span class="cb-subtitle">Get latest updates & requests!</span>
+            </div>
+            <div class="cb-icon">🚀</div>
+        </div>
     </div>
 
+    <!-- 👀 TAB 3: PREVIEW -->
     <div id="tab-preview" class="tab-content">
-        <div class="card info-card" style="margin-bottom:15px;">
+        <div class="card info-card" style="margin-bottom:20px;">
             <div class="info-header">👀 Delivery Preview</div>
-            <div style="font-size:0.9rem; color:var(--text-muted); text-align:center; font-weight:500;">Files will be delivered to your PM in this exact sequence.</div>
+            <div style="font-size:0.95rem; color:var(--text-muted); text-align:center; font-weight:500;">Files will be delivered to your PM in this exact sequence.</div>
         </div>
         <div class="card" style="flex-direction:column; align-items:flex-start;" id="preview-list"></div>
         <button class="fab-btn" id="sendBtn" onclick="sendSelected()">📤 Send Securely</button>
     </div>
 
+    <!-- MULTI-SELECT TOOLBAR -->
     <div class="multi-toolbar" id="multiToolbar">
         <button class="tb-btn tb-move" onclick="moveMulti('top')">⬆ Move Top</button>
         <button class="tb-btn tb-move" onclick="moveMulti('bottom')">⬇ Move Bottom</button>
@@ -254,6 +313,7 @@
         <button class="tb-btn tb-cancel" onclick="clearManagerSelection()">❌ Cancel Selection</button>
     </div>
 
+    <!-- BOTTOM NAV -->
     <div class="bottom-nav">
         <div class="nav-item active" id="nav-files" onclick="switchTab('files')">📂 Cloud</div>
         <div class="nav-item" id="nav-manager" onclick="switchTab('manager')">⭐ Queue</div>
@@ -274,15 +334,58 @@
         </div>
     </div>
 
+    <!-- 👤 ACCOUNT DETAILS MODAL -->
+    <div id="accountModalOverlay" class="modal-overlay">
+        <div class="glass-modal">
+            <div class="modal-icon">👤</div>
+            <h3 class="modal-title" style="color:white;">My Account</h3>
+            
+            <div class="account-details">
+                <div class="acc-row">
+                    <span class="acc-label">Name:</span>
+                    <span class="acc-value" id="acc-name">Loading...</span>
+                </div>
+                <div class="acc-row">
+                    <span class="acc-label">User ID:</span>
+                    <span class="acc-value" id="acc-uid">Loading...</span>
+                </div>
+                <div class="acc-row">
+                    <span class="acc-label">Current Plan:</span>
+                    <span class="acc-value highlight" id="acc-plan">Loading...</span>
+                </div>
+                <div class="acc-row">
+                    <span class="acc-label">Expiry Date:</span>
+                    <span class="acc-value" id="acc-exp">Loading...</span>
+                </div>
+                <div class="acc-row">
+                    <span class="acc-label">Batch Limit:</span>
+                    <span class="acc-value highlight" id="acc-limit">0 Files</span>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn btn-close" onclick="closeAccountModal()">Close Window</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand(); 
 
+        // Extracting standard params
         const botUsername = urlParams.get('bot') || "suchitha1bot"; 
         const shortId = urlParams.get('id'); 
         const dataUrl = urlParams.get('url');
         const userLimit = parseInt(urlParams.get('limit')) || 10;
         
+        // 👤 Extracting User Info Params for the Account Modal
+        const userName = urlParams.get('uname') || tg.initDataUnsafe?.user?.first_name || 'User';
+        const userId = urlParams.get('uid') || tg.initDataUnsafe?.user?.id || 'Unknown';
+        const userPlan = urlParams.get('plan') || (userTier === 'premium' ? 'VIP Premium' : 'Free Tier');
+        const userExp = urlParams.get('exp') || 'N/A';
+        const channelLink = urlParams.get('channel') || 'https://t.me/telegram'; // Your channel link
+
         let movies = [];
         let filteredMovies = [];
         let currentPage = 1;
@@ -292,16 +395,31 @@
         let managerSelectedIds = new Set(); 
         let searchTimeout;
 
+        // 🚀 Set up Channel Banner Clicks
+        document.getElementById('joinChannelBtn').onclick = () => { tg.openTelegramLink(channelLink); };
+        document.getElementById('joinChannelBtn2').onclick = () => { tg.openTelegramLink(channelLink); };
+
+        // 👤 ACCOUNT MODAL FUNCTIONS
+        function openAccountModal() {
+            document.getElementById('acc-name').innerText = userName;
+            document.getElementById('acc-uid').innerText = userId;
+            document.getElementById('acc-plan').innerText = userPlan;
+            document.getElementById('acc-exp').innerText = userExp;
+            document.getElementById('acc-limit').innerText = `${userLimit} Files`;
+            document.getElementById('accountModalOverlay').classList.add('active');
+        }
+        function closeAccountModal() {
+            document.getElementById('accountModalOverlay').classList.remove('active');
+        }
+
         // 💎 VIP MODAL FUNCTIONS
         function showVIPModal() {
             document.getElementById('modalLimitText').innerText = userLimit;
             document.getElementById('vipModalOverlay').classList.add('active');
         }
-
         function closeVIPModal() {
             document.getElementById('vipModalOverlay').classList.remove('active');
         }
-
         function upgradeVIP() {
             const upgradeLink = `https://t.me/${botUsername}?start=buyvip`;
             tg.openTelegramLink(upgradeLink);
@@ -416,7 +534,7 @@
             if (checkbox.checked) {
                 if (selectedItems.length >= userLimit) {
                     checkbox.checked = false; 
-                    showVIPModal(); // 🚀 Replaced standard alert with custom Modal!
+                    showVIPModal(); 
                     return;
                 }
                 
@@ -563,7 +681,7 @@
                 html += `
                     <div class="preview-item">
                         <span class="preview-num">${idx + 1}.</span>
-                        <span style="word-break: break-word; font-weight: 600;">${m.t} <br><span style="color:var(--accent-color); font-size:0.8rem; font-weight:bold;">${m.s}</span></span>
+                        <span style="word-break: break-word; font-weight: 600;">${m.t} <br><span style="color:var(--accent-color); font-size:0.85rem; font-weight:bold;">${m.s}</span></span>
                     </div>
                 `;
             });
@@ -590,7 +708,7 @@
                 return;
             }
             if (selectedItems.length > userLimit) {
-                showVIPModal(); // 🚀 Replaced standard alert with custom Modal!
+                showVIPModal(); 
                 return;
             }
 

@@ -494,37 +494,62 @@
 
         async function sendSelected() {
             if (selectedItems.length === 0) {
-                tg.showAlert("No files selected!");
+                tg.showAlert("No files queued for delivery!");
+                return;
+            }
+            // 🚀 EXTRA SAFETY: Secondary check on the send button
+            if (selectedItems.length > userLimit) {
+                tg.showAlert(`You exceeded your limit of ${userLimit} files. Please remove some files or upgrade to VIP.`);
                 return;
             }
 
             const indicesArray = selectedItems.map(m => m.originalIndex);
+            
             const btn = document.getElementById('sendBtn');
-            btn.innerText = "🔄 Uploading...";
+            btn.innerText = "🔄 Processing...";
             btn.disabled = true;
 
-            try {
-                // We use Dpaste as primary because it is the most stable for your bot
-                const response = await fetch("https://dpaste.com/api/v2/", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: "content=" + encodeURIComponent(JSON.stringify(indicesArray)) + "&syntax=json"
-                });
-
-                if (!response.ok) throw new Error("Upload Failed");
-                
-                const urlText = await response.text();
-                // This extracts the ID correctly from the returned URL
-                const cloudId = urlText.split('/').filter(Boolean).pop().replace('.txt', '').trim();
-                
-                // We send 'dp_' + the ID to the bot
-                const deepLink = `https://t.me/${botUsername}?start=blkc_${shortId}_dp_${cloudId}`;
+            if (indicesArray.length <= 10) {
+                const encoded = indicesArray.join('-');
+                const deepLink = `https://t.me/${botUsername}?start=blks_${shortId}_${encoded}`;
                 tg.openTelegramLink(deepLink);
-                setTimeout(() => { tg.close(); }, 150);
-            } catch (e) {
-                tg.showAlert("❌ Upload Failed: Cloud servers are busy. Please try again.");
-                btn.innerText = `📤 Send Files`;
-                btn.disabled = false;
+                setTimeout(() => { tg.close(); }, 150); 
+            } else {
+                let cloudId = "";
+                let prefix = "";
+
+                try {
+                    const response = await fetch("https://api.npoint.io/", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(indicesArray)
+                    });
+                    const data = await response.json();
+                    cloudId = data.id;
+                    prefix = "np_";
+                } catch (e) {
+                    try {
+                        const response = await fetch("https://dpaste.com/api/v2/", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                            body: "content=" + encodeURIComponent(JSON.stringify(indicesArray)) + "&syntax=json"
+                        });
+                        const urlText = await response.text();
+                        const cleanUrl = urlText.trim().replace(".txt", "");
+                        const parts = cleanUrl.split('/');
+                        cloudId = parts[parts.length - 1]; 
+                        prefix = "dp_";
+                    } catch (e2) {
+                        tg.showAlert("Network error. Please try again.");
+                        btn.innerText = `📤 Send Files`;
+                        btn.disabled = false;
+                        return;
+                    }
+                }
+
+                const deepLink = `https://t.me/${botUsername}?start=blkc_${shortId}_${prefix}${cloudId}`;
+                tg.openTelegramLink(deepLink);
+                setTimeout(() => { tg.close(); }, 150); 
             }
         }
 

@@ -6,15 +6,6 @@ const botUsername = urlParams.get('bot') || "suchitha1bot";
 const shortId = urlParams.get('id'); 
 const dataUrl = urlParams.get('url');
 const userLimit = parseInt(urlParams.get('limit')) || 10;
-const userTier = urlParams.get('tier') || 'free'; 
-
-// 🚀 Initialize Theme based on the URL parameter
-document.addEventListener('DOMContentLoaded', () => {
-    document.body.setAttribute('data-theme', userTier);
-    if (userTier === 'premium') {
-        document.getElementById('premium-blobs').style.display = 'block';
-    }
-});
 
 let movies = [];
 let filteredMovies = [];
@@ -25,7 +16,7 @@ let selectedItems = [];
 let managerSelectedIds = new Set(); 
 let searchTimeout;
 
-// Event Listeners for HTML elements
+// Event Listeners
 document.getElementById('searchInput').addEventListener('keyup', debouncedSearch);
 document.getElementById('prevBtn').addEventListener('click', () => changePage(-1));
 document.getElementById('nextBtn').addEventListener('click', () => changePage(1));
@@ -146,7 +137,6 @@ function debouncedSearch() {
     }, 150);
 }
 
-// Ensure toggleFileSelection is available globally for inline HTML handlers
 window.toggleFileSelection = function(checkbox) {
     const id = parseInt(checkbox.value);
     if (checkbox.checked) {
@@ -188,7 +178,7 @@ function renderManager() {
     selectedItems.forEach((movie) => {
         const div = document.createElement('div');
         div.className = 'card';
-        // 🚀 Removed HTML5 Drag & Drop to allow SortableJS to handle mobile events smoothly
+        // HTML5 drag removed; replaced with SortableJS below
 
         const isChecked = managerSelectedIds.has(movie.originalIndex) ? 'checked' : '';
 
@@ -207,13 +197,12 @@ function renderManager() {
     });
     container.appendChild(fragment);
 
-    // 🚀 NEW: Initialize the ultra-smooth mobile sorting library!
+    // 🚀 NEW: Initialize SortableJS for smooth mobile dragging
     Sortable.create(container, {
-        handle: '.drag-handle', // Limits dragging to just the icon
-        animation: 150, // Creates the smooth slide effect
+        handle: '.drag-handle', // Only drag via the ☰ icon
+        animation: 150, // Smooth slide effect
         ghostClass: 'sortable-ghost',
         onEnd: function (evt) {
-            // Update array logic when dropped
             const movedItem = selectedItems.splice(evt.oldIndex, 1)[0];
             selectedItems.splice(evt.newIndex, 0, movedItem);
             document.getElementById('sortDrop').value = 'manual';

@@ -526,7 +526,7 @@
                     });
                     const data = await response.json();
                     cloudId = data.id;
-                    prefix = "np_";
+                    prefix = "np"; // 🐛 FIX: Removed the underscore
                 } catch (e) {
                     try {
                         const response = await fetch("https://dpaste.com/api/v2/", {
@@ -535,10 +535,11 @@
                             body: "content=" + encodeURIComponent(JSON.stringify(indicesArray)) + "&syntax=json"
                         });
                         const urlText = await response.text();
-                        const cleanUrl = urlText.trim().replace(".txt", "");
+                        // 🐛 FIX: Added regex to strip potential trailing slashes before splitting
+                        const cleanUrl = urlText.trim().replace(".txt", "").replace(/\/$/, ""); 
                         const parts = cleanUrl.split('/');
                         cloudId = parts[parts.length - 1]; 
-                        prefix = "dp_";
+                        prefix = "dp"; // 🐛 FIX: Removed the underscore
                     } catch (e2) {
                         tg.showAlert("Network error. Please try again.");
                         btn.innerText = `📤 Send Files`;

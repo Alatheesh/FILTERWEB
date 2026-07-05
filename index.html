@@ -497,16 +497,15 @@
                 tg.showAlert("No files queued for delivery!");
                 return;
             }
-            // 🚀 EXTRA SAFETY: Secondary check on the send button
-            if (selectedItems.length > userLimit) {
-                tg.showAlert(`You exceeded your limit of ${userLimit} files. Please remove some files or upgrade to VIP.`);
+            if (selectedItems.length > 300) {
+                tg.showAlert("To prevent Telegram flood blocks, please limit to 300 files per batch.");
                 return;
             }
 
             const indicesArray = selectedItems.map(m => m.originalIndex);
             
             const btn = document.getElementById('sendBtn');
-            btn.innerText = "🔄 Processing...";
+            btn.innerText = "🔄 Uploading to Cloud...";
             btn.disabled = true;
 
             if (indicesArray.length <= 10) {
@@ -514,6 +513,45 @@
                 const deepLink = `https://t.me/${botUsername}?start=blks_${shortId}_${encoded}`;
                 tg.openTelegramLink(deepLink);
                 setTimeout(() => { tg.close(); }, 150); 
+            } else {
+                let cloudId = "";
+
+                try {
+                    // Try Npoint
+                    const response = await fetch("https://api.npoint.io/", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(indicesArray)
+                    });
+                    if (!response.ok) throw new Error("Npoint Failed");
+                    const data = await response.json();
+                    cloudId = data.id;
+                } catch (e) {
+                    try {
+                        // Backup: Dpaste
+                        const response2 = await fetch("https://dpaste.com/api/v2/", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                            body: `content=${JSON.stringify(indicesArray)}&syntax=json`
+                        });
+                        if (!response2.ok) throw new Error("Dpaste Failed");
+                        const textData = await response2.text();
+                        // Dpaste returns a URL like https://dpaste.com/ABCDEF.txt
+                        cloudId = textData.split('/').pop().replace('.txt', '').trim();
+                    } catch (e2) {
+                        // 🛑 THE FIX: Stop the Web App if both clouds fail!
+                        tg.showAlert("❌ Upload Failed: The cloud servers are currently blocking the request. Please try selecting fewer files or try again later.");
+                        btn.innerText = `📤 Send Files`;
+                        btn.disabled = false;
+                        return; // This stops it from redirecting to the bot with broken data!
+                    }
+                }
+
+                const deepLink = `https://t.me/${botUsername}?start=blkc_${shortId}_${cloudId}`;
+                tg.openTelegramLink(deepLink);
+                setTimeout(() => { tg.close(); }, 150); 
+            }
+        }
             } else {
                 let cloudId = "";
                 let prefix = "";

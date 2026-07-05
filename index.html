@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bulk Delivery Manager</title>
+    <title>Delivery Manager</title>
     
-    <!-- ADD THESE 3 LINES TO PREVENT CACHING FOREVER -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
+
+    <!-- ========================================== -->
+    <!-- 🟢 THEME 1: FREE USER (BASIC UI) CSS -->
+    <!-- ========================================== -->
+    <style id="theme-free">
         :root {
             --bg-color: var(--tg-theme-bg-color, #17212b);
             --sec-bg-color: var(--tg-theme-secondary-bg-color, #242f3d);
@@ -21,135 +24,157 @@
             --btn-text: var(--tg-theme-button-text-color, #ffffff);
             --danger-color: #ef4444;
         }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0; 
-            padding: 15px; 
-            padding-bottom: 150px; 
-            -webkit-font-smoothing: antialiased;
-            user-select: none;
-        }
-
-        /* Tabs */
-        .tab-content { display: none; animation: fadeIn 0.2s ease; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Search Box */
-        .search-box {
-            width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 12px;
-            border: 1px solid var(--hint-color); background-color: var(--sec-bg-color);
-            color: var(--text-color); font-size: 1rem; box-sizing: border-box; outline: none;
-            transition: border-color 0.2s ease;
-        }
+        body { font-family: -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 15px; padding-bottom: 150px; user-select: none; overflow-x: hidden; }
+        .search-box { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 12px; border: 1px solid var(--hint-color); background-color: var(--sec-bg-color); color: var(--text-color); font-size: 1rem; box-sizing: border-box; outline: none; }
         .search-box:focus { border-color: var(--btn-color); }
-
-        /* Cards */
-        .card {
-            background-color: var(--sec-bg-color); margin-bottom: 10px; padding: 14px; 
-            border-radius: 12px; display: flex; align-items: center; 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15); transition: transform 0.1s;
-        }
-        .card:active { transform: scale(0.98); }
-        
-        .info-card {
-            border: 1px solid var(--btn-color); flex-direction: column; align-items: flex-start;
-            margin-bottom: 20px; background: rgba(43, 158, 179, 0.05);
-        }
+        .card { background-color: var(--sec-bg-color); margin-bottom: 10px; padding: 14px; border-radius: 12px; display: flex; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+        .info-card { border: 1px solid var(--btn-color); flex-direction: column; align-items: flex-start; margin-bottom: 20px; background: rgba(43, 158, 179, 0.05); }
         .info-header { font-size: 1.1rem; font-weight: bold; margin-bottom: 10px; color: var(--btn-color); width: 100%; text-align: center; border-bottom: 1px solid var(--hint-color); padding-bottom: 8px;}
         .info-row { display: flex; justify-content: space-between; width: 100%; margin-bottom: 8px; font-size: 0.95rem; }
         .info-label { color: var(--hint-color); font-weight: 500;}
         .info-value { font-weight: bold; }
-
-        /* Checkboxes & Handles */
         .checkbox-container { display: flex; align-items: center; width: 100%; cursor: pointer; flex: 1;}
-        input[type="checkbox"] {
-            appearance: none; width: 22px; height: 22px; border: 2px solid var(--btn-color);
-            border-radius: 6px; margin-right: 12px; position: relative; outline: none; flex-shrink: 0;
-        }
+        input[type="checkbox"] { appearance: none; width: 22px; height: 22px; border: 2px solid var(--btn-color); border-radius: 6px; margin-right: 12px; position: relative; outline: none; flex-shrink: 0; }
         input[type="checkbox"]:checked { background-color: var(--btn-color); }
         input[type="checkbox"]:checked::after { content: "✓"; position: absolute; color: white; font-size: 14px; font-weight: bold; left: 4px; top: 0px; }
-        
         .drag-handle { margin-right: 12px; color: var(--hint-color); font-size: 1.2rem; cursor: grab; padding: 5px; }
         .remove-btn { color: var(--danger-color); font-size: 1.2rem; background: none; border: none; padding: 5px 10px; cursor: pointer; font-weight: bold;}
-
-        /* Typography */
         .movie-info { display: flex; flex-direction: column; flex: 1; overflow: hidden;}
         .movie-title { font-size: 0.95rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .movie-size { font-size: 0.8rem; color: #38bdf8; margin-top: 4px; font-weight: bold; }
-        
-        /* Buttons & Selects */
-        select.sort-dropdown {
-            background: var(--bg-color); color: var(--text-color); border: 1px solid var(--hint-color);
-            padding: 4px 8px; border-radius: 6px; outline: none; font-weight: bold;
-        }
+        select.sort-dropdown { background: var(--bg-color); color: var(--text-color); border: 1px solid var(--hint-color); padding: 4px 8px; border-radius: 6px; outline: none; font-weight: bold; }
         .action-row { display: flex; justify-content: space-between; width: 100%; margin-top: 10px; gap: 10px; }
         .action-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--hint-color); background: var(--sec-bg-color); color: var(--text-color); font-weight: bold; cursor: pointer;}
-        
-        /* Pagination */
         .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; margin-bottom: 20px;}
         .page-btn { background: transparent; border: 1px solid var(--btn-color); color: var(--btn-color); padding: 8px 16px; border-radius: 8px; font-weight: bold;}
         .page-btn:disabled { opacity: 0.3; }
-
-        /* Floating Action Button */
-        .fab-btn {
-            position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px;
-            background-color: var(--btn-color); color: var(--btn-text);
-            border: none; padding: 14px; border-radius: 12px; font-size: 1.1rem; font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4); cursor: pointer; z-index: 90;
-        }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; background: var(--sec-bg-color);
-            display: flex; border-top: 1px solid rgba(0,0,0,0.2); z-index: 100;
-        }
-        .nav-item {
-            flex: 1; padding: 15px 0; text-align: center; color: var(--hint-color);
-            font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: 0.2s;
-        }
+        .fab-btn { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background-color: var(--btn-color); color: var(--btn-text); border: none; padding: 14px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.4); cursor: pointer; z-index: 90; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--sec-bg-color); display: flex; border-top: 1px solid rgba(0,0,0,0.2); z-index: 100; }
+        .nav-item { flex: 1; padding: 15px 0; text-align: center; color: var(--hint-color); font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
         .nav-item.active { color: var(--btn-color); border-top: 3px solid var(--btn-color); background: rgba(43, 158, 179, 0.1); }
-
-        /* Multi-Select Toolbar */
-        .multi-toolbar {
-            position: fixed; bottom: 0; left: 0; right: 0; background: var(--sec-bg-color);
-            display: flex; flex-wrap: wrap; padding: 10px; gap: 8px; border-top: 1px solid var(--btn-color);
-            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 110;
-        }
+        .multi-toolbar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--sec-bg-color); display: flex; flex-wrap: wrap; padding: 10px; gap: 8px; border-top: 1px solid var(--btn-color); transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 110; }
         .multi-toolbar.active { transform: translateY(0); }
         .tb-btn { flex: 1 1 45%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; font-size: 0.9rem; color: white;}
         .tb-move { background: var(--btn-color); }
         .tb-del { background: var(--danger-color); }
         .tb-cancel { background: var(--hint-color); flex: 1 1 100%;}
-
-        /* Loaders */
-        .spinner {
-            width: 40px; height: 40px; border: 4px solid var(--sec-bg-color);
-            border-top: 4px solid var(--btn-color); border-radius: 50%;
-            animation: spin 0.8s linear infinite; margin: 40px auto 10px auto;
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .spinner { width: 40px; height: 40px; border: 4px solid var(--sec-bg-color); border-top: 4px solid var(--btn-color); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 40px auto 10px auto; }
         .loading-text { text-align: center; color: var(--hint-color); font-weight: 500; }
-        
         .preview-item { font-size: 0.95rem; margin-bottom: 12px; display: flex; align-items: flex-start;}
         .preview-num { color: var(--btn-color); font-weight: bold; width: 30px; flex-shrink: 0;}
     </style>
+
+    <!-- ========================================== -->
+    <!-- 💎 THEME 2: VIP PREMIUM (GLASSMORPHIC) CSS -->
+    <!-- ========================================== -->
+    <style id="theme-premium">
+        :root {
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-highlight: rgba(255, 255, 255, 0.15);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #8b5cf6 100%);
+            --accent-color: #38bdf8;
+            --danger-color: #ef4444;
+        }
+        body { font-family: -apple-system, sans-serif; background-color: var(--bg-dark); color: var(--text-main); margin: 0; padding: 15px; padding-bottom: 150px; user-select: none; overflow-x: hidden; }
+        .search-box { width: 100%; padding: 16px; margin-bottom: 20px; border-radius: 16px; border: 1px solid var(--glass-border); background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: var(--text-main); font-size: 1rem; box-sizing: border-box; outline: none; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .search-box:focus { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.07); box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); }
+        .search-box::placeholder { color: var(--text-muted); }
+        .card { background: var(--glass-bg); margin-bottom: 12px; padding: 16px; border-radius: 16px; display: flex; align-items: center; border: 1px solid var(--glass-border); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s; }
+        .card:active { transform: scale(0.97); background: var(--glass-highlight); }
+        .info-card { flex-direction: column; align-items: flex-start; margin-bottom: 25px; background: linear-gradient(145deg, rgba(56,189,248,0.05) 0%, rgba(139,92,246,0.05) 100%); border: 1px solid rgba(56, 189, 248, 0.2); }
+        .info-header { font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; width: 100%; text-align: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px;}
+        .info-row { display: flex; justify-content: space-between; width: 100%; margin-bottom: 10px; font-size: 0.95rem; }
+        .info-label { color: var(--text-muted); font-weight: 500;}
+        .info-value { font-weight: 700; }
+        .checkbox-container { display: flex; align-items: center; width: 100%; cursor: pointer; flex: 1;}
+        input[type="checkbox"] { appearance: none; width: 24px; height: 24px; border: 2px solid var(--text-muted); border-radius: 8px; margin-right: 14px; position: relative; outline: none; flex-shrink: 0; transition: all 0.3s ease; background: rgba(0,0,0,0.2); }
+        input[type="checkbox"]:checked { background: var(--accent-gradient); border-color: transparent; box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+        input[type="checkbox"]:checked::after { content: "✓"; position: absolute; color: white; font-size: 15px; font-weight: 900; left: 5px; top: 1px; }
+        .drag-handle { margin-right: 14px; color: var(--text-muted); font-size: 1.2rem; cursor: grab; padding: 5px; }
+        .remove-btn { color: var(--danger-color); font-size: 1.2rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 5px 10px; cursor: pointer; font-weight: bold; border-radius: 8px; transition: 0.2s;}
+        .remove-btn:active { background: var(--danger-color); color: white;}
+        .movie-info { display: flex; flex-direction: column; flex: 1; overflow: hidden;}
+        .movie-title { font-size: 0.95rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.3px;}
+        .movie-size { font-size: 0.8rem; color: var(--accent-color); margin-top: 5px; font-weight: 700; }
+        select.sort-dropdown { background: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--glass-border); padding: 6px 10px; border-radius: 8px; outline: none; font-weight: 600; backdrop-filter: blur(10px); }
+        .action-row { display: flex; justify-content: space-between; width: 100%; margin-top: 15px; gap: 12px; }
+        .action-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); font-weight: 600; cursor: pointer; transition: 0.2s;}
+        .action-btn:active { background: rgba(255,255,255,0.1); }
+        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; margin-bottom: 25px;}
+        .page-btn { background: var(--glass-bg); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 10px 18px; border-radius: 10px; font-weight: 700; backdrop-filter: blur(5px);}
+        .page-btn:disabled { opacity: 0.3; border-color: var(--text-muted); color: var(--text-muted); }
+        .fab-btn { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 380px; background: var(--accent-gradient); color: white; border: none; padding: 16px; border-radius: 16px; font-size: 1.1rem; font-weight: 800; box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4); cursor: pointer; z-index: 90; transition: transform 0.2s, box-shadow 0.2s; }
+        .fab-btn:active { transform: translateX(-50%) scale(0.96); box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3); }
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; border: 1px solid var(--glass-border); z-index: 100; border-radius: 24px; padding: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .nav-item { flex: 1; padding: 12px 0; text-align: center; color: var(--text-muted); font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; border-radius: 18px; }
+        .nav-item.active { color: white; background: rgba(255,255,255,0.1); box-shadow: inset 0 0 10px rgba(255,255,255,0.05); }
+        .multi-toolbar { position: fixed; bottom: 90px; left: 50%; transform: translate(-50%, 150%); width: 90%; max-width: 400px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; flex-wrap: wrap; padding: 12px; gap: 10px; border-radius: 20px; border: 1px solid rgba(56, 189, 248, 0.3); box-shadow: 0 10px 40px rgba(0,0,0,0.6); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 110; }
+        .multi-toolbar.active { transform: translate(-50%, 0); }
+        .tb-btn { flex: 1 1 45%; padding: 12px; border-radius: 12px; border: none; font-weight: 700; font-size: 0.9rem; color: white;}
+        .tb-move { background: var(--glass-highlight); border: 1px solid var(--glass-border); }
+        .tb-del { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5;}
+        .tb-cancel { background: var(--accent-gradient); flex: 1 1 100%; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);}
+        .spinner { width: 45px; height: 45px; border: 4px solid var(--glass-bg); border-top: 4px solid var(--accent-color); border-radius: 50%; animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite; margin: 50px auto 15px auto; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .loading-text { text-align: center; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px;}
+        .preview-item { font-size: 0.95rem; margin-bottom: 14px; display: flex; align-items: flex-start;}
+        .preview-num { color: var(--accent-color); font-weight: 800; width: 35px; flex-shrink: 0;}
+    </style>
+
+    <!-- Global Layout Elements -->
+    <style>
+        .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* The glowing blobs (Only visible for VIPs) */
+        #premium-blobs { display: none; }
+        .ambient-blob { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -1; opacity: 0.6; animation: floatBlob 10s ease-in-out infinite alternate; }
+        .blob-1 { top: -10%; left: -20%; width: 300px; height: 300px; background: rgba(56, 189, 248, 0.4); }
+        .blob-2 { bottom: 10%; right: -20%; width: 250px; height: 250px; background: rgba(139, 92, 246, 0.4); animation-delay: -5s; }
+        @keyframes floatBlob { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(30px) scale(1.1); } }
+    </style>
+
+    <!-- 🚀 THE THEME SWITCHER LOGIC -->
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const userTier = urlParams.get('tier') || 'free'; 
+
+        // If the user is Premium, delete the free CSS and show the blobs. 
+        // If they are Free, delete the Premium CSS.
+        if (userTier === 'premium') {
+            document.getElementById('theme-free').remove();
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('premium-blobs').style.display = 'block';
+            });
+        } else {
+            document.getElementById('theme-premium').remove();
+        }
+    </script>
 </head>
 <body>
 
+    <!-- Ambient Glowing Backgrounds (Hidden by default, shown for VIPs) -->
+    <div id="premium-blobs">
+        <div class="ambient-blob blob-1"></div>
+        <div class="ambient-blob blob-2"></div>
+    </div>
+
+    <!-- The exact same app structure you already have! -->
     <div id="tab-files" class="tab-content active">
-        <input type="text" id="searchInput" class="search-box" placeholder="Search available files..." onkeyup="debouncedSearch()">
+        <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search your files..." onkeyup="debouncedSearch()">
         <div id="loadingWrapper">
             <div class="spinner"></div>
-            <div class="loading-text" id="loadingText">Fetching from Cloud...</div>
+            <div class="loading-text" id="loadingText">Syncing Secure Cloud...</div>
         </div>
         <div id="movie-list"></div>
         <div class="pagination" id="paginationBar" style="display: none;">
             <button class="page-btn" id="prevBtn" onclick="changePage(-1)">◀ Prev</button>
-            <span class="page-info" id="pageInfo" style="color:var(--hint-color); font-weight:bold;">Page 1</span>
+            <span class="page-info" id="pageInfo" style="color:var(--text-muted); font-weight:bold;">Page 1</span>
             <button class="page-btn" id="nextBtn" onclick="changePage(1)">Next ▶</button>
         </div>
         <button class="fab-btn" id="continueBtn" style="display:none;" onclick="switchTab('manager')">Continue (0)</button>
@@ -163,7 +188,7 @@
             <div class="info-row">
                 <span class="info-label">🔀 Sort:</span>
                 <select class="sort-dropdown" id="sortDrop" onchange="applySort()">
-                    <option value="manual">▼ Manual</option>
+                    <option value="manual">▼ Manual Sorting</option>
                     <option value="size">Size (Large to Small)</option>
                 </select>
             </div>
@@ -178,10 +203,10 @@
     <div id="tab-preview" class="tab-content">
         <div class="card info-card" style="margin-bottom:15px;">
             <div class="info-header">👀 Delivery Preview</div>
-            <div style="font-size:0.9rem; color:var(--hint-color); text-align:center;">Files will be delivered to Telegram in this exact sequence.</div>
+            <div style="font-size:0.9rem; color:var(--text-muted); text-align:center; font-weight:500;">Files will be delivered to your PM in this exact sequence.</div>
         </div>
         <div class="card" style="flex-direction:column; align-items:flex-start;" id="preview-list"></div>
-        <button class="fab-btn" id="sendBtn" onclick="sendSelected()">📤 Send Files</button>
+        <button class="fab-btn" id="sendBtn" onclick="sendSelected()">📤 Send Securely</button>
     </div>
 
     <div class="multi-toolbar" id="multiToolbar">
@@ -192,21 +217,18 @@
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-item active" id="nav-files" onclick="switchTab('files')">📂 Files</div>
-        <div class="nav-item" id="nav-manager" onclick="switchTab('manager')">⭐ Selected</div>
-        <div class="nav-item" id="nav-preview" onclick="switchTab('preview')">👀 Preview</div>
+        <div class="nav-item active" id="nav-files" onclick="switchTab('files')">📂 Cloud</div>
+        <div class="nav-item" id="nav-manager" onclick="switchTab('manager')">⭐ Queue</div>
+        <div class="nav-item" id="nav-preview" onclick="switchTab('preview')">👀 Review</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand(); 
 
-        const urlParams = new URLSearchParams(window.location.search);
         const botUsername = urlParams.get('bot') || "suchitha1bot"; 
         const shortId = urlParams.get('id'); 
         const dataUrl = urlParams.get('url');
-        
-        // 🚀 NEW: Grabbing the user's limit from the URL! Default to 10 if missing.
         const userLimit = parseInt(urlParams.get('limit')) || 10;
         
         let movies = [];
@@ -262,7 +284,7 @@
                 document.getElementById('continueBtn').style.display = 'block';
                 renderFilesList();
             } catch (e) {
-                document.getElementById('loadingText').innerText = "❌ Error loading database.";
+                document.getElementById('loadingText').innerText = "❌ Error loading secure database.";
                 document.querySelector('.spinner').style.display = 'none';
             }
         }
@@ -284,8 +306,8 @@
                     <label class="checkbox-container">
                         <input type="checkbox" value="${movie.originalIndex}" ${isSelected ? 'checked' : ''} onchange="toggleFileSelection(this)">
                         <div class="movie-info">
-                            <span class="movie-title">📂 ${movie.t}</span>
-                            <span class="movie-size">💾 [${movie.s}]</span>
+                            <span class="movie-title">${movie.t}</span>
+                            <span class="movie-size">${movie.s}</span>
                         </div>
                     </label>
                 `;
@@ -321,14 +343,12 @@
             }, 150);
         }
 
-        // 🚀 THE NEW CHECKBOX VIP ENFORCER
         function toggleFileSelection(checkbox) {
             const id = parseInt(checkbox.value);
             if (checkbox.checked) {
-                // If they are trying to select more than their tier allows:
                 if (selectedItems.length >= userLimit) {
-                    checkbox.checked = false; // Immediately uncheck the box visually
-                    tg.showAlert(`⚠️ VIP Upgrade Required!\n\nYour current plan limits you to selecting a maximum of ${userLimit} files at once.\n\nPlease upgrade to a VIP plan to unlock Unlimited Batch selections!`);
+                    checkbox.checked = false; 
+                    tg.showAlert(`⚠️ Tier Limit Reached!\n\nYour current plan limits you to a maximum of ${userLimit} files per batch.\n\nPlease upgrade to a higher VIP plan to unlock larger batches!`);
                     return;
                 }
                 
@@ -344,7 +364,7 @@
 
         function updateContinueButton() {
             document.getElementById('continueBtn').innerText = `Continue (${selectedItems.length} / ${userLimit})`;
-            document.getElementById('nav-manager').innerText = `⭐ Selected (${selectedItems.length})`;
+            document.getElementById('nav-manager').innerText = `⭐ Queue (${selectedItems.length})`;
         }
 
         function renderManager() {
@@ -356,7 +376,7 @@
             document.getElementById('mgr-size').innerText = formatBytes(totalBytes);
 
             if(selectedItems.length === 0) {
-                container.innerHTML = '<div style="text-align:center; color:var(--hint-color); margin-top:20px;">No files selected yet.</div>';
+                container.innerHTML = '<div style="text-align:center; color:var(--text-muted); margin-top:20px; font-weight: 500;">Your queue is empty.</div>';
                 return;
             }
 
@@ -468,7 +488,7 @@
             container.innerHTML = '';
             
             if(selectedItems.length === 0) {
-                container.innerHTML = '<div style="color:var(--hint-color); width:100%; text-align:center;">No files queued.</div>';
+                container.innerHTML = '<div style="color:var(--text-muted); width:100%; text-align:center; font-weight: 500;">No files queued.</div>';
                 return;
             }
 
@@ -476,8 +496,8 @@
             selectedItems.forEach((m, idx) => {
                 html += `
                     <div class="preview-item">
-                        <span class="preview-num">${idx + 1}️⃣</span>
-                        <span style="word-break: break-word;">${m.t} <br><span style="color:#38bdf8; font-size:0.8rem; font-weight:bold;">${m.s}</span></span>
+                        <span class="preview-num">${idx + 1}.</span>
+                        <span style="word-break: break-word; font-weight: 600;">${m.t} <br><span style="color:var(--accent-color); font-size:0.8rem; font-weight:bold;">${m.s}</span></span>
                     </div>
                 `;
             });
@@ -503,7 +523,6 @@
                 tg.showAlert("No files queued for delivery!");
                 return;
             }
-            // 🚀 EXTRA SAFETY: Secondary check on the send button
             if (selectedItems.length > userLimit) {
                 tg.showAlert(`You exceeded your limit of ${userLimit} files. Please remove some files or upgrade to VIP.`);
                 return;
@@ -522,9 +541,6 @@
                 setTimeout(() => { tg.close(); }, 150); 
             } else {
                 let cloudId = "";
-                // 🐛 FIX: Left prefix completely blank. The bot doesn't need it!
-                let prefix = ""; 
-
                 try {
                     const response = await fetch("https://api.npoint.io/", {
                         method: "POST",
@@ -546,20 +562,18 @@
                         cloudId = parts[parts.length - 1]; 
                     } catch (e2) {
                         tg.showAlert("Network error. Please try again.");
-                        btn.innerText = `📤 Send Files`;
+                        btn.innerText = `📤 Send Securely`;
                         btn.disabled = false;
                         return;
                     }
                 }
 
-                // This will now generate a clean link like: ?start=blkc_12345_7X6D3BV85
                 const deepLink = `https://t.me/${botUsername}?start=blkc_${shortId}_${cloudId}`;
                 tg.openTelegramLink(deepLink);
                 setTimeout(() => { tg.close(); }, 150); 
             }
         }
 
-        // Init
         loadCloudData();
     </script>
 </body>

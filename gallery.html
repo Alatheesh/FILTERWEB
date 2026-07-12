@@ -50,11 +50,37 @@
             background: #000;
             border: 1px solid var(--glass-border);
         }
+        
+        /* 🚀 NEW HIGHLIGHTED FOOTER STYLES */
         .footer {
-            margin-top: 10px;
-            font-size: 0.85em;
-            color: rgba(255, 255, 255, 0.6);
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--glass-border);
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.7);
         }
+        .footer-brand {
+            margin-bottom: 8px;
+            font-size: 1em;
+            letter-spacing: 1px;
+        }
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .footer a:hover {
+            color: #fff;
+            text-shadow: 0 0 8px var(--accent);
+        }
+        .credits-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
         /* Hide scrollbar for seamless Telegram Web App look */
         ::-webkit-scrollbar { width: 0px; background: transparent; }
     </style>
@@ -68,9 +94,14 @@
             <!-- Images or Video dynamically injected here -->
         </div>
 
+        <!-- 🚀 NEW HIGHLIGHTED FOOTER -->
         <div class="footer">
-            ミ💖 🇸 🇺 🇨 🇭 🇮 🇹 🇭 🇦 💖彡<br>
-            Developer: @TG_LATHEESH
+            <div class="footer-brand">ミ💖 🇸 🇺 🇨 🇭 🇮 🇹 🇭 🇦 💖彡</div>
+            <div class="credits-container">
+                <span>Credits <a href="https://t.me/llathu63035" target="_blank">NTM</a></span>
+                <span>•</span>
+                <span>Developer <a href="https://t.me/TG_LATHEESH" target="_blank">LATHEESH</a></span>
+            </div>
         </div>
     </div>
 

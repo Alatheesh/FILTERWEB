@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Media Viewer</title>
+    
+    <!-- 🚀 NEW: Official Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
     <style>
         :root {
             --glass-bg: rgba(20, 25, 30, 0.6);
@@ -51,7 +55,6 @@
             border: 1px solid var(--glass-border);
         }
         
-        /* 🚀 NEW HIGHLIGHTED FOOTER STYLES */
         .footer {
             margin-top: 15px;
             padding-top: 15px;
@@ -64,11 +67,14 @@
             font-size: 1em;
             letter-spacing: 1px;
         }
+        
+        /* Updated anchor styles to act like buttons */
         .footer a {
             color: var(--accent);
             text-decoration: none;
             font-weight: bold;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
         .footer a:hover {
             color: #fff;
@@ -81,7 +87,6 @@
             flex-wrap: wrap;
         }
 
-        /* Hide scrollbar for seamless Telegram Web App look */
         ::-webkit-scrollbar { width: 0px; background: transparent; }
     </style>
 </head>
@@ -94,18 +99,28 @@
             <!-- Images or Video dynamically injected here -->
         </div>
 
-        <!-- 🚀 NEW HIGHLIGHTED FOOTER -->
         <div class="footer">
             <div class="footer-brand">ミ💖 🇸 🇺 🇨 🇭 🇮 🇹 🇭 🇦 💖彡</div>
             <div class="credits-container">
-                <span>Credits <a href="https://t.me/llathu63035" target="_blank">NTM</a></span>
+                <!-- 🚀 NEW: Using onclick to trigger Telegram's native link handler -->
+                <span>Credits <a onclick="openTgLink('https://t.me/llathu63035')">NTM</a></span>
                 <span>•</span>
-                <span>Developer <a href="https://t.me/TG_LATHEESH" target="_blank">LATHEESH</a></span>
+                <span>Developer <a onclick="openTgLink('https://t.me/TG_LATHEESH')">LATHEESH</a></span>
             </div>
         </div>
     </div>
 
     <script>
+        // 🚀 NEW: Native Telegram Link Handler
+        // This tells Telegram to minimize the Web App instead of destroying it
+        function openTgLink(url) {
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+                window.Telegram.WebApp.openTelegramLink(url);
+            } else {
+                window.open(url, '_blank'); // Fallback for desktop browsers
+            }
+        }
+
         // Secure URL Decoder for Base64 Strings
         function decodeUrls(str) {
             let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
@@ -150,6 +165,11 @@
             }
         } else {
             contentBox.innerHTML = "<p>No media found. The link may have expired.</p>";
+        }
+
+        // Inform Telegram that the Web App is fully loaded
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.ready();
         }
     </script>
 </body>

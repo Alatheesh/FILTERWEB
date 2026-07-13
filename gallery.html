@@ -24,7 +24,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 70px; /* Space for the floating button */
+            padding-top: 70px;
         }
         .glass-container {
             background: var(--glass-bg);
@@ -49,7 +49,6 @@
             margin-bottom: 20px;
         }
         
-        /* 🚀 Floating Download Button at Top Right */
         .floating-dl-btn {
             position: fixed;
             top: 15px;
@@ -161,6 +160,7 @@
 
         const params = new URLSearchParams(window.location.search);
         const movieTitleClean = params.get('title') || 'Movie_Media';
+        const safeFilename = movieTitleClean.replace(/[^a-zA-Z0-9]/g, "_");
         document.getElementById('mediaTitle').textContent = decodeURIComponent(movieTitleClean);
 
         const imgData = params.get('data');
@@ -202,90 +202,54 @@
             }
         }
 
-        // 🚀 PURE NATIVE DOWNLOADER (No Proxies!)
-        async function handleMasterDownload() {
+        // 🚀 YOUR DOWNLOAD LOGIC APPLIED HERE
+        function handleMasterDownload() {
             dlBtn.disabled = true;
 
             if (isVideoMode) {
-                btnText.innerHTML = "⏳ Processing...";
-                try {
-                    // 1. Direct fetch (No Proxy)
-                    const response = await fetch(activeRawVideoUrl);
-                    if (!response.ok) throw new Error("Fetch failed");
-                    
-                    // 2. Force OS to recognize as MP4 to fix "Unsupported File" bug
-                    const arrayBuffer = await response.arrayBuffer();
-                    const blob = new Blob([arrayBuffer], { type: "video/mp4" });
-                    const bUrl = window.URL.createObjectURL(blob);
-                    
-                    // 3. Trigger Download Dialog
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = bUrl;
-                    a.download = `${movieTitleClean.replace(/[^a-zA-Z0-9]/g, "_")}_Sample.mp4`;
-                    document.body.appendChild(a);
-                    a.click();
-                    
-                    setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(bUrl); }, 2000);
-                    btnText.innerHTML = "✅ Video Saved!";
-                } catch (err) {
-                    // If file is too big for device RAM, safely open in native browser
-                    if (window.Telegram && window.Telegram.WebApp) {
-                        window.Telegram.WebApp.openLink(activeRawVideoUrl);
-                    } else {
-                        window.open(activeRawVideoUrl, '_blank');
-                    }
-                    btnText.innerHTML = "✅ Opened in Browser";
-                }
+                btnText.innerHTML = "⏳ Downloading...";
+                
+                const a = document.createElement("a");
+                a.href = activeRawVideoUrl;
+                a.download = `${safeFilename}_Sample.mp4`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                btnText.innerHTML = "✅ Video Downloaded!";
+                
+                setTimeout(() => {
+                    btnText.innerHTML = "📥 Download Video";
+                    dlBtn.disabled = false;
+                }, 3000);
+                
             } else {
                 if (globalUrlsArray.length === 0) return;
+                btnText.innerHTML = "⏳ Downloading...";
                 
-                for (let i = 0; i < globalUrlsArray.length; i++) {
-                    const url = globalUrlsArray[i];
-                    if (!url) continue;
-
-                    try {
-                        btnText.innerHTML = `⏳ Saving ${i + 1}/${globalUrlsArray.length}...`;
-                        
-                        // 1. Direct fetch (No Proxy)
-                        const response = await fetch(url);
-                        if (!response.ok) throw new Error("Fetch failed");
-                        
-                        // 2. Force OS to recognize as JPEG to fix "Unsupported File" bug
-                        const arrayBuffer = await response.arrayBuffer();
-                        const blob = new Blob([arrayBuffer], { type: "image/jpeg" });
-                        const bUrl = window.URL.createObjectURL(blob);
-                        
-                        // 3. Trigger Download Dialog
-                        const a = document.createElement('a');
-                        a.style.display = 'none';
-                        a.href = bUrl;
-                        a.download = `${movieTitleClean.replace(/[^a-zA-Z0-9]/g, "_")}_${i + 1}.jpg`;
+                globalUrlsArray.forEach((url, index) => {
+                    if(url.trim() === '') return;
+                    
+                    setTimeout(() => {
+                        const a = document.createElement("a");
+                        a.href = url.trim();
+                        a.download = `${safeFilename}_${index + 1}.jpg`;
                         document.body.appendChild(a);
                         a.click();
-                        
-                        setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(bUrl); }, 2000);
-
-                        // 🚀 1.5 Second delay so the OS can prompt "Where do you want to save this?"
-                        await new Promise(resolve => setTimeout(resolve, 1500));
-                        
-                    } catch (err) {
-                        console.error("Failed on image", i);
-                        if (window.Telegram && window.Telegram.WebApp) {
-                            window.Telegram.WebApp.openLink(url);
-                        } else {
-                            window.open(url, '_blank');
-                        }
-                    }
-                }
-                btnText.innerHTML = "✅ All Saved!";
+                        a.remove();
+                    }, index * 500);
+                });
+                
+                // Reset button text after the last timeout finishes
+                const totalTime = (globalUrlsArray.length * 500) + 1000;
+                setTimeout(() => {
+                    btnText.innerHTML = "✅ All Downloaded!";
+                    setTimeout(() => {
+                        btnText.innerHTML = "📥 Download Images";
+                        dlBtn.disabled = false;
+                    }, 3000);
+                }, totalTime);
             }
-
-            // Reset button text after 4 seconds
-            setTimeout(() => {
-                btnText.innerHTML = isVideoMode ? "📥 Download Video" : "📥 Download Images";
-                dlBtn.disabled = false;
-            }, 4000);
         }
 
         if (window.Telegram && window.Telegram.WebApp) {

@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Media Viewer</title>
     
-    <!-- 🚀 NEW: Official Telegram Web App SDK -->
+    <!-- 🚀 Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- 🚀 JSZip Compiler (Enables bundling multiple images into 1 single ZIP file) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <style>
         :root {
@@ -14,6 +17,7 @@
             --glass-border: rgba(255, 255, 255, 0.1);
             --text-main: #ffffff;
             --accent: #00d2ff;
+            --btn-glow: rgba(0, 210, 255, 0.4);
         }
         body {
             background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
@@ -46,6 +50,38 @@
             word-wrap: break-word;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
+        
+        /* 🚀 NEW: One-Click Premium Download Button Style */
+        .download-action-bar {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .premium-dl-btn {
+            background: rgba(0, 210, 255, 0.15);
+            color: #fff;
+            border: 1px solid var(--accent);
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px var(--btn-glow);
+        }
+        .premium-dl-btn:hover {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 25px var(--accent);
+            transform: scale(1.03);
+        }
+        .premium-dl-btn:active {
+            transform: scale(0.98);
+        }
+
         .media-content img, .media-content video {
             width: 100%;
             border-radius: 12px;
@@ -67,8 +103,6 @@
             font-size: 1em;
             letter-spacing: 1px;
         }
-        
-        /* Updated anchor styles to act like buttons */
         .footer a {
             color: var(--accent);
             text-decoration: none;
@@ -95,6 +129,13 @@
     <div class="glass-container">
         <h2 id="mediaTitle">Loading Media...</h2>
         
+        <!-- 🚀 NEW: Dynamic One-Click Download Button Placement -->
+        <div class="download-action-bar">
+            <button class="premium-dl-btn" id="masterDownloadBtn" onclick="handleMasterDownload()">
+                <span>📥 One-Click Download</span>
+            </button>
+        </div>
+        
         <div class="media-content" id="mediaContent">
             <!-- Images or Video dynamically injected here -->
         </div>
@@ -102,7 +143,6 @@
         <div class="footer">
             <div class="footer-brand">ミ💖 🇸 🇺 🇨 🇭 🇮 🇹 🇭 🇦 💖彡</div>
             <div class="credits-container">
-                <!-- 🚀 NEW: Using onclick to trigger Telegram's native link handler -->
                 <span>Credits <a onclick="openTgLink('https://t.me/llathu63035')">NTM</a></span>
                 <span>•</span>
                 <span>Developer <a onclick="openTgLink('https://t.me/TG_LATHEESH')">LATHEESH</a></span>
@@ -111,13 +151,17 @@
     </div>
 
     <script>
-        // 🚀 NEW: Native Telegram Link Handler
-        // This tells Telegram to minimize the Web App instead of destroying it
+        // Global variables to store assets for the downloader
+        let globalUrlsArray = [];
+        let isVideoMode = false;
+        let activeRawVideoUrl = "";
+
+        // Native Telegram Link Handler
         function openTgLink(url) {
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
                 window.Telegram.WebApp.openTelegramLink(url);
             } else {
-                window.open(url, '_blank'); // Fallback for desktop browsers
+                window.open(url, '_blank');
             }
         }
 
@@ -130,28 +174,35 @@
             }).join(''));
         }
 
-        // Parse the URL parameters sent by the bot
+        // Parse parameters from the Bot's WebApp request URL
         const params = new URLSearchParams(window.location.search);
-        const title = params.get('title') || 'Media Viewer';
-        document.getElementById('mediaTitle').textContent = title;
+        const movieTitleClean = params.get('title') || 'Movie_Media';
+        document.getElementById('mediaTitle').textContent = decodeURIComponent(movieTitleClean);
 
         const imgData = params.get('data');
         const videoUrl = params.get('video');
         const contentBox = document.getElementById('mediaContent');
+        const dlBtn = document.getElementById('masterDownloadBtn');
 
         if (videoUrl) {
-            // 🎬 STREAM VIDEO PLAYER MODE
+            // 🎬 VIDEO MODE SETUP
+            isVideoMode = true;
+            activeRawVideoUrl = decodeURIComponent(videoUrl);
+            dlBtn.innerHTML = "📥 Download Video Clip";
+            
             contentBox.innerHTML = `
                 <video controls autoplay playsinline preload="auto">
-                    <source src="${videoUrl}" type="video/mp4">
+                    <source src="${activeRawVideoUrl}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             `;
         } else if (imgData) {
-            // 🖼️ IMAGE GALLERY MODE
+            // 🖼️ IMAGE MODE SETUP
+            isVideoMode = false;
+            dlBtn.innerHTML = "📥 Download All Images (.zip)";
             try {
-                const urls = decodeUrls(imgData).split(',');
-                urls.forEach((url, index) => {
+                globalUrlsArray = decodeUrls(imgData).split(',');
+                globalUrlsArray.forEach((url, index) => {
                     if(url.trim() !== '') {
                         const img = document.createElement('img');
                         img.src = url;
@@ -161,13 +212,86 @@
                     }
                 });
             } catch (e) {
-                contentBox.innerHTML = "<p>Error rendering images.</p>";
+                contentBox.innerHTML = "<p>Error rendering image cards.</p>";
             }
         } else {
-            contentBox.innerHTML = "<p>No media found. The link may have expired.</p>";
+            contentBox.innerHTML = "<p>No media data found.</p>";
+            dlBtn.style.display = "none";
         }
 
-        // Inform Telegram that the Web App is fully loaded
+        // 🚀 NEW: MASTER ONE-CLICK DOWNLOAD MANAGER
+        async function handleMasterDownload() {
+            if (isVideoMode) {
+                // 🎬 Video Downloader Trigger
+                dlBtn.innerHTML = "⏳ Downloading File...";
+                dlBtn.disabled = true;
+                try {
+                    const response = await fetch(activeRawVideoUrl);
+                    const blob = await response.blob();
+                    const bUrl = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = bUrl;
+                    link.download = `${movieTitleClean.replace(/[^a-zA-Z0-0]/g, "_")}_sample.mp4`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(bUrl);
+                } catch (err) {
+                    // Fallback link trick if CORS blocks internal blob fetching
+                    window.open(activeRawVideoUrl, '_blank');
+                }
+                dlBtn.innerHTML = "🎬 Download Video Clip";
+                dlBtn.disabled = false;
+            } else {
+                // 🖼️ Image ZIP Bundler Trigger
+                if (globalUrlsArray.length === 0) return;
+                dlBtn.innerHTML = "⏳ Bundling Archive...";
+                dlBtn.disabled = true;
+                
+                const zip = new JSZip();
+                let successfullyFetched = 0;
+
+                try {
+                    for (let i = 0; i < globalUrlsArray.length; i++) {
+                        const currentUrl = globalUrlsArray[i];
+                        if (!currentUrl) continue;
+                        
+                        const response = await fetch(currentUrl);
+                        const blob = await response.blob();
+                        zip.file(`screenshot_${i + 1}.jpg`, blob);
+                        successfullyFetched++;
+                    }
+
+                    if (successfullyFetched > 0) {
+                        const zipBlob = await zip.generateAsync({type: "blob"});
+                        const zipUrl = window.URL.createObjectURL(zipBlob);
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = zipUrl;
+                        downloadLink.download = `${movieTitleClean.replace(/[^a-zA-Z0-9]/g, "_")}_Screenshots.zip`;
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                        window.URL.revokeObjectURL(zipUrl);
+                    }
+                } catch (error) {
+                    // Safety Backup Fallback: If external server CORS policies reject script bundling, 
+                    // download each screenshot one-by-one sequentially automatically.
+                    globalUrlsArray.forEach((url, i) => {
+                        if(!url) return;
+                        const fallbackLink = document.createElement('a');
+                        fallbackLink.href = url;
+                        fallbackLink.download = `screenshot_${i + 1}.jpg`;
+                        fallbackLink.target = "_blank";
+                        document.body.appendChild(fallbackLink);
+                        fallbackLink.click();
+                        document.body.removeChild(fallbackLink);
+                    });
+                }
+                dlBtn.innerHTML = "📥 Download All Images (.zip)";
+                dlBtn.disabled = false;
+            }
+        }
+
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
         }

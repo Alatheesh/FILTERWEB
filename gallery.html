@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Media Viewer</title>
     
-    <!-- 🚀 Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- 🚀 JSZip Compiler -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <style>
@@ -51,7 +48,6 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         
-        /* 🚀 THE MISSING BUTTON STYLES */
         .download-action-bar {
             margin-bottom: 20px;
             display: flex;
@@ -129,7 +125,6 @@
     <div class="glass-container">
         <h2 id="mediaTitle">Loading Media...</h2>
         
-        <!-- 🚀 THE DOWNLOAD BUTTON -->
         <div class="download-action-bar">
             <button class="premium-dl-btn" id="masterDownloadBtn" onclick="handleMasterDownload()">
                 <span>📥 One-Click Download</span>
@@ -153,6 +148,9 @@
         let globalUrlsArray = [];
         let isVideoMode = false;
         let activeRawVideoUrl = "";
+        
+        // 🚀 THE MAGIC CORS PROXY
+        const CORS_PROXY = "https://corsproxy.io/?";
 
         function openTgLink(url) {
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
@@ -217,7 +215,10 @@
                 dlBtn.innerHTML = "⏳ Downloading File...";
                 dlBtn.disabled = true;
                 try {
-                    const response = await fetch(activeRawVideoUrl);
+                    // 🚀 APPLIED CORS PROXY TO VIDEO DOWNLOAD
+                    const response = await fetch(CORS_PROXY + encodeURIComponent(activeRawVideoUrl));
+                    if (!response.ok) throw new Error("Network response was not ok");
+                    
                     const blob = await response.blob();
                     const bUrl = window.URL.createObjectURL(blob);
                     const link = document.createElement('a');
@@ -245,7 +246,10 @@
                         const currentUrl = globalUrlsArray[i];
                         if (!currentUrl) continue;
                         
-                        const response = await fetch(currentUrl);
+                        // 🚀 APPLIED CORS PROXY TO IMAGE BUNDLER
+                        const response = await fetch(CORS_PROXY + encodeURIComponent(currentUrl));
+                        if (!response.ok) throw new Error("Network response was not ok");
+                        
                         const blob = await response.blob();
                         zip.file(`screenshot_${i + 1}.jpg`, blob);
                         successfullyFetched++;

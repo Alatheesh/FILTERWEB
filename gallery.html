@@ -6,7 +6,6 @@
     <title>Media Viewer</title>
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <style>
         :root {
@@ -46,13 +45,10 @@
             font-size: 1.4rem;
             word-wrap: break-word;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 25px;
         }
         
-        .download-action-bar {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-        }
+        /* Video Download Button */
         .premium-dl-btn {
             background: rgba(0, 210, 255, 0.15);
             color: #fff;
@@ -62,11 +58,13 @@
             font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 10px;
             transition: all 0.3s ease;
             box-shadow: 0 0 15px var(--btn-glow);
+            text-decoration: none;
+            margin-bottom: 20px;
         }
         .premium-dl-btn:hover {
             background: var(--accent);
@@ -74,17 +72,47 @@
             box-shadow: 0 0 25px var(--accent);
             transform: scale(1.03);
         }
-        .premium-dl-btn:active {
-            transform: scale(0.98);
-        }
 
-        .media-content img, .media-content video {
+        /* Image Card UI */
+        .image-wrapper {
+            background: #000;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+        .image-wrapper img, video {
             width: 100%;
+            display: block;
+            border-radius: 12px 12px 0 0;
+        }
+        video {
             border-radius: 12px;
             margin-bottom: 20px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-            background: #000;
             border: 1px solid var(--glass-border);
+        }
+        .img-dl-bar {
+            background: rgba(20, 25, 30, 0.9);
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid var(--glass-border);
+        }
+        .dl-sm-btn {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 8px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            font-size: 0.9rem;
+        }
+        .dl-sm-btn:hover {
+            background: var(--accent);
+            color: #000;
         }
         
         .footer {
@@ -125,11 +153,8 @@
     <div class="glass-container">
         <h2 id="mediaTitle">Loading Media...</h2>
         
-        <div class="download-action-bar">
-            <button class="premium-dl-btn" id="masterDownloadBtn" onclick="handleMasterDownload()">
-                <span>📥 One-Click Download</span>
-            </button>
-        </div>
+        <!-- Video Action Bar (Hidden by default) -->
+        <div id="videoActionContainer"></div>
         
         <div class="media-content" id="mediaContent">
         </div>
@@ -145,13 +170,6 @@
     </div>
 
     <script>
-        let globalUrlsArray = [];
-        let isVideoMode = false;
-        let activeRawVideoUrl = "";
-        
-        // 🚀 THE MAGIC CORS PROXY
-        const CORS_PROXY = "https://corsproxy.io/?";
-
         function openTgLink(url) {
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
                 window.Telegram.WebApp.openTelegramLink(url);
@@ -175,12 +193,18 @@
         const imgData = params.get('data');
         const videoUrl = params.get('video');
         const contentBox = document.getElementById('mediaContent');
-        const dlBtn = document.getElementById('masterDownloadBtn');
+        const videoActionContainer = document.getElementById('videoActionContainer');
 
         if (videoUrl) {
-            isVideoMode = true;
-            activeRawVideoUrl = decodeURIComponent(videoUrl);
-            dlBtn.innerHTML = "📥 Download Video Clip";
+            // VIDEO MODE
+            const activeRawVideoUrl = decodeURIComponent(videoUrl);
+            
+            // Provides a clean native anchor link for video downloading
+            videoActionContainer.innerHTML = `
+                <a href="${activeRawVideoUrl}" download class="premium-dl-btn" target="_top">
+                    📥 Download Video Clip
+                </a>
+            `;
             
             contentBox.innerHTML = `
                 <video controls autoplay playsinline preload="auto">
@@ -189,17 +213,21 @@
                 </video>
             `;
         } else if (imgData) {
-            isVideoMode = false;
-            dlBtn.innerHTML = "📥 Download All Images (.zip)";
+            // IMAGE MODE
             try {
-                globalUrlsArray = decodeUrls(imgData).split(',');
-                globalUrlsArray.forEach((url, index) => {
+                const urls = decodeUrls(imgData).split(',');
+                urls.forEach((url, index) => {
                     if(url.trim() !== '') {
-                        const img = document.createElement('img');
-                        img.src = url;
-                        img.alt = `Screenshot ${index + 1}`;
-                        img.loading = "lazy";
-                        contentBox.appendChild(img);
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'image-wrapper';
+                        
+                        wrapper.innerHTML = `
+                            <img src="${url}" alt="Screenshot ${index + 1}" loading="lazy">
+                            <div class="img-dl-bar">
+                                <button class="dl-sm-btn" id="btn-${index}" onclick="downloadSingleImage('${url}', ${index})">⬇️ Save Image</button>
+                            </div>
+                        `;
+                        contentBox.appendChild(wrapper);
                     }
                 });
             } catch (e) {
@@ -207,79 +235,32 @@
             }
         } else {
             contentBox.innerHTML = "<p>No media data found.</p>";
-            dlBtn.style.display = "none";
         }
 
-        async function handleMasterDownload() {
-            if (isVideoMode) {
-                dlBtn.innerHTML = "⏳ Downloading File...";
-                dlBtn.disabled = true;
-                try {
-                    // 🚀 APPLIED CORS PROXY TO VIDEO DOWNLOAD
-                    const response = await fetch(CORS_PROXY + encodeURIComponent(activeRawVideoUrl));
-                    if (!response.ok) throw new Error("Network response was not ok");
-                    
-                    const blob = await response.blob();
-                    const bUrl = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = bUrl;
-                    link.download = `${movieTitleClean.replace(/[^a-zA-Z0-9]/g, "_")}_sample.mp4`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(bUrl);
-                } catch (err) {
-                    window.open(activeRawVideoUrl, '_blank');
-                }
-                dlBtn.innerHTML = "🎬 Download Video Clip";
-                dlBtn.disabled = false;
-            } else {
-                if (globalUrlsArray.length === 0) return;
-                dlBtn.innerHTML = "⏳ Bundling Archive...";
-                dlBtn.disabled = true;
+        // INDIVIDUAL IMAGE DOWNLOADER
+        async function downloadSingleImage(url, index) {
+            const btn = document.getElementById(`btn-${index}`);
+            btn.innerHTML = "⏳ Saving...";
+            
+            try {
+                const response = await fetch(url);
+                const blob = await response.blob();
+                const bUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = bUrl;
+                a.download = `Screenshot_${index + 1}.jpg`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(bUrl);
                 
-                const zip = new JSZip();
-                let successfullyFetched = 0;
-
-                try {
-                    for (let i = 0; i < globalUrlsArray.length; i++) {
-                        const currentUrl = globalUrlsArray[i];
-                        if (!currentUrl) continue;
-                        
-                        // 🚀 APPLIED CORS PROXY TO IMAGE BUNDLER
-                        const response = await fetch(CORS_PROXY + encodeURIComponent(currentUrl));
-                        if (!response.ok) throw new Error("Network response was not ok");
-                        
-                        const blob = await response.blob();
-                        zip.file(`screenshot_${i + 1}.jpg`, blob);
-                        successfullyFetched++;
-                    }
-
-                    if (successfullyFetched > 0) {
-                        const zipBlob = await zip.generateAsync({type: "blob"});
-                        const zipUrl = window.URL.createObjectURL(zipBlob);
-                        const downloadLink = document.createElement('a');
-                        downloadLink.href = zipUrl;
-                        downloadLink.download = `${movieTitleClean.replace(/[^a-zA-Z0-9]/g, "_")}_Screenshots.zip`;
-                        document.body.appendChild(downloadLink);
-                        downloadLink.click();
-                        document.body.removeChild(downloadLink);
-                        window.URL.revokeObjectURL(zipUrl);
-                    }
-                } catch (error) {
-                    globalUrlsArray.forEach((url, i) => {
-                        if(!url) return;
-                        const fallbackLink = document.createElement('a');
-                        fallbackLink.href = url;
-                        fallbackLink.download = `screenshot_${i + 1}.jpg`;
-                        fallbackLink.target = "_blank";
-                        document.body.appendChild(fallbackLink);
-                        fallbackLink.click();
-                        document.body.removeChild(fallbackLink);
-                    });
-                }
-                dlBtn.innerHTML = "📥 Download All Images (.zip)";
-                dlBtn.disabled = false;
+                btn.innerHTML = "✅ Saved!";
+                btn.style.color = "#0f0";
+                btn.style.borderColor = "#0f0";
+            } catch (err) {
+                // If it fails, open it so the user can still get it
+                window.open(url, '_blank');
+                btn.innerHTML = "⬇️ Save Image";
             }
         }
 

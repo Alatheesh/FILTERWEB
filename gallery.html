@@ -49,7 +49,7 @@
             margin-bottom: 20px;
         }
         
-        /* 🚀 NEW: Floating Download Button at Top Right */
+        /* 🚀 Floating Download Button at Top Right */
         .floating-dl-btn {
             position: fixed;
             top: 15px;
@@ -142,6 +142,9 @@
         let globalUrlsArray = [];
         let isVideoMode = false;
         let activeRawVideoUrl = "";
+        
+        // 🚀 THE MAGIC PROXY RE-ADDED (CRITICAL FOR DOWNLOADING)
+        const CORS_PROXY = "https://corsproxy.io/?";
 
         function openTgLink(url) {
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
@@ -170,7 +173,6 @@
         const btnText = document.getElementById('btnText');
 
         if (videoUrl) {
-            // VIDEO MODE
             isVideoMode = true;
             activeRawVideoUrl = decodeURIComponent(videoUrl);
             btnText.innerHTML = "📥 Download Video";
@@ -183,7 +185,6 @@
                 </video>
             `;
         } else if (imgData) {
-            // IMAGE MODE
             isVideoMode = false;
             btnText.innerHTML = "📥 Download Images";
             dlBtn.style.display = "flex";
@@ -204,19 +205,18 @@
             }
         }
 
-        // 🚀 THE NEW RAW DOWNLOADER (Fixes the Unsupported Bug!)
+        // 🚀 BULLETPROOF NATIVE DOWNLOADER
         async function handleMasterDownload() {
             dlBtn.disabled = true;
 
             if (isVideoMode) {
                 btnText.innerHTML = "⏳ Processing...";
                 try {
-                    // Fetch raw binary data directly
-                    const response = await fetch(activeRawVideoUrl);
+                    // Fetch using Proxy + Force MP4 Format
+                    const response = await fetch(CORS_PROXY + encodeURIComponent(activeRawVideoUrl));
                     if (!response.ok) throw new Error("Fetch failed");
-                    const arrayBuffer = await response.arrayBuffer();
                     
-                    // 🚀 BUG FIX: Force the OS to recognize this as an MP4 Video
+                    const arrayBuffer = await response.arrayBuffer();
                     const blob = new Blob([arrayBuffer], { type: "video/mp4" });
                     const bUrl = window.URL.createObjectURL(blob);
                     
@@ -227,19 +227,13 @@
                     document.body.appendChild(a);
                     a.click();
                     
-                    setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(bUrl); }, 2000);
+                    setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(bUrl); }, 5000);
                     btnText.innerHTML = "✅ Video Saved!";
                 } catch (err) {
-                    // Safety Fallback for heavy videos that crash mobile RAM
-                    if (window.Telegram && window.Telegram.WebApp) {
-                        window.Telegram.WebApp.openLink(activeRawVideoUrl);
-                    } else {
-                        window.open(activeRawVideoUrl, '_blank');
-                    }
+                    window.open(activeRawVideoUrl, '_blank');
                     btnText.innerHTML = "✅ Opened in Browser";
                 }
             } else {
-                // IMAGE MODE: Sequential individual downloads without zips
                 if (globalUrlsArray.length === 0) return;
                 
                 for (let i = 0; i < globalUrlsArray.length; i++) {
@@ -249,12 +243,11 @@
                     try {
                         btnText.innerHTML = `⏳ Saving ${i + 1}/${globalUrlsArray.length}...`;
                         
-                        // Fetch raw binary data directly
-                        const response = await fetch(url);
+                        // Fetch using Proxy + Force JPEG Format
+                        const response = await fetch(CORS_PROXY + encodeURIComponent(url));
                         if (!response.ok) throw new Error("Fetch failed");
-                        const arrayBuffer = await response.arrayBuffer();
                         
-                        // 🚀 BUG FIX: Force the OS to recognize this as a JPEG Image
+                        const arrayBuffer = await response.arrayBuffer();
                         const blob = new Blob([arrayBuffer], { type: "image/jpeg" });
                         const bUrl = window.URL.createObjectURL(blob);
                         
@@ -265,13 +258,15 @@
                         document.body.appendChild(a);
                         a.click();
                         
-                        setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(bUrl); }, 2000);
+                        setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(bUrl); }, 5000);
 
-                        // 🚀 1.5 Second delay so the browser can ask "Where do you want to save this?"
+                        // 🚀 1.5 Second delay so the browser can natively process the save dialogue
                         await new Promise(resolve => setTimeout(resolve, 1500));
                         
                     } catch (err) {
                         console.error("Failed on image", i);
+                        // If it fails, fallback to opening it in a new tab so the user can still get it
+                        window.open(url, '_blank');
                     }
                 }
                 btnText.innerHTML = "✅ All Saved!";

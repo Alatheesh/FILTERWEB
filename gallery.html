@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Media Viewer</title>
     
-    <!-- 🚀 Modern Font: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -22,7 +21,6 @@
             --warning-text: #F59E0B;
         }
 
-        /* 🎬 Cinematic Fade-in Animation */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
@@ -58,7 +56,6 @@
             position: relative;
         }
 
-        /* ✨ Gradient Title */
         h2 {
             margin-top: 0;
             font-size: 1.5rem;
@@ -71,7 +68,6 @@
             letter-spacing: -0.5px;
         }
         
-        /* 🚀 Floating Download Button */
         .floating-dl-btn {
             position: fixed;
             top: 15px;
@@ -104,7 +100,6 @@
             transform: scale(0.95);
         }
 
-        /* 📸 Media Content */
         .media-content img, .media-content video {
             width: 100%;
             border-radius: 16px;
@@ -115,7 +110,7 @@
             transition: transform 0.3s ease;
         }
         
-        /* 🔊 Modern Audio Box with Chips */
+        /* 🔊 Audio Layout Updates */
         .audio-info-box {
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--card-border);
@@ -132,11 +127,29 @@
             align-items: center;
             gap: 8px;
         }
+        .audio-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 5px;
+        }
+        .audio-category {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .audio-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            width: 60px; /* Aligns the chips properly */
+            margin-top: 6px;
+        }
         .audio-chip-container {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 12px;
+            flex: 1;
         }
         .audio-chip {
             background: rgba(255, 255, 255, 0.05);
@@ -148,6 +161,7 @@
             font-weight: 600;
             display: inline-flex;
             align-items: center;
+            cursor: default; /* Tells user it's not a button */
         }
         .audio-chip.default {
             background: rgba(0, 210, 255, 0.1);
@@ -155,7 +169,6 @@
             color: var(--accent);
         }
         
-        /* ⚠️ Warning Banner */
         .warning-banner {
             background: var(--warning-bg);
             border: 1px solid rgba(245, 158, 11, 0.2);
@@ -166,11 +179,10 @@
             display: flex;
             align-items: flex-start;
             gap: 10px;
-            margin-top: 15px;
+            margin-top: 18px;
             line-height: 1.5;
         }
 
-        /* 📊 Premium Metadata Accordion */
         details.metadata-accordion {
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--card-border);
@@ -207,13 +219,12 @@
         .metadata-content {
             padding: 0 20px 20px 20px;
             font-size: 0.85rem;
-            font-family: 'JetBrains Mono', monospace; /* Code-like font for data */
+            font-family: 'JetBrains Mono', monospace;
             white-space: pre-wrap;
             color: var(--accent);
             line-height: 1.7;
         }
         
-        /* 👟 Clean Footer */
         .footer {
             margin-top: 10px;
             padding-top: 20px;
@@ -249,7 +260,6 @@
 </head>
 <body>
 
-    <!-- 🚀 FLOATING DOWNLOAD BUTTON -->
     <button class="floating-dl-btn" id="floatingDlBtn" onclick="handleMasterDownload()" style="display: none;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         <span id="btnText">Download</span>
@@ -320,11 +330,35 @@
         if (videoUrl) {
             const activeRawVideoUrl = decodeURIComponent(videoUrl);
             
-            // 🚀 BUILD MODERN AUDIO CHIPS
             let audioHTML = "";
             if (audioArr.length > 0) {
-                let defaultAudio = `<div class="audio-chip default">▶ ${audioArr[0]}</div>`;
-                let otherAudios = audioArr.slice(1).map(track => `<div class="audio-chip">${track}</div>`).join('');
+                // Render Default Audio
+                let defaultAudio = `
+                    <div class="audio-category">
+                        <span class="audio-label">Default:</span>
+                        <div class="audio-chip default">▶ ${audioArr[0]}</div>
+                    </div>`;
+                
+                let otherAudios = "";
+                let warningBanner = "";
+
+                // Render 'Others' and 'Warning' ONLY if there is more than 1 track
+                if (audioArr.length > 1) {
+                    let otherChips = audioArr.slice(1).map(track => `<div class="audio-chip">${track}</div>`).join('');
+                    otherAudios = `
+                        <div class="audio-category">
+                            <span class="audio-label">Others:</span>
+                            <div class="audio-chip-container">
+                                ${otherChips}
+                            </div>
+                        </div>`;
+                        
+                    warningBanner = `
+                        <div class="warning-banner">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            <div><b>Audio playback cannot be changed in this preview.</b><br>To switch languages, download the video using the 3 dots (⋮) in the player above, open them in external players like MX Player or Playit and change the audios.</div>
+                        </div>`;
+                }
                 
                 audioHTML = `
                 <div class="audio-info-box">
@@ -332,14 +366,11 @@
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
                         Audio Tracks Found
                     </h4>
-                    <div class="audio-chip-container">
+                    <div class="audio-layout">
                         ${defaultAudio}
                         ${otherAudios}
                     </div>
-                    <div class="warning-banner">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                        <div><b>Audio playback cannot be changed in this preview.</b><br>To switch languages, download the video using the 3 dots (⋮) in the player above, open them in external players like MX Player or Playit and change the audios.</div>
-                    </div>
+                    ${warningBanner}
                 </div>`;
             }
 

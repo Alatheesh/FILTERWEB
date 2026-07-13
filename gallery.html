@@ -142,9 +142,6 @@
         let globalUrlsArray = [];
         let isVideoMode = false;
         let activeRawVideoUrl = "";
-        
-        // 🚀 THE MAGIC PROXY RE-ADDED (CRITICAL FOR DOWNLOADING)
-        const CORS_PROXY = "https://corsproxy.io/?";
 
         function openTgLink(url) {
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
@@ -205,21 +202,23 @@
             }
         }
 
-        // 🚀 BULLETPROOF NATIVE DOWNLOADER
+        // 🚀 PURE NATIVE DOWNLOADER (No Proxies!)
         async function handleMasterDownload() {
             dlBtn.disabled = true;
 
             if (isVideoMode) {
                 btnText.innerHTML = "⏳ Processing...";
                 try {
-                    // Fetch using Proxy + Force MP4 Format
-                    const response = await fetch(CORS_PROXY + encodeURIComponent(activeRawVideoUrl));
+                    // 1. Direct fetch (No Proxy)
+                    const response = await fetch(activeRawVideoUrl);
                     if (!response.ok) throw new Error("Fetch failed");
                     
+                    // 2. Force OS to recognize as MP4 to fix "Unsupported File" bug
                     const arrayBuffer = await response.arrayBuffer();
                     const blob = new Blob([arrayBuffer], { type: "video/mp4" });
                     const bUrl = window.URL.createObjectURL(blob);
                     
+                    // 3. Trigger Download Dialog
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = bUrl;
@@ -227,10 +226,15 @@
                     document.body.appendChild(a);
                     a.click();
                     
-                    setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(bUrl); }, 5000);
+                    setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(bUrl); }, 2000);
                     btnText.innerHTML = "✅ Video Saved!";
                 } catch (err) {
-                    window.open(activeRawVideoUrl, '_blank');
+                    // If file is too big for device RAM, safely open in native browser
+                    if (window.Telegram && window.Telegram.WebApp) {
+                        window.Telegram.WebApp.openLink(activeRawVideoUrl);
+                    } else {
+                        window.open(activeRawVideoUrl, '_blank');
+                    }
                     btnText.innerHTML = "✅ Opened in Browser";
                 }
             } else {
@@ -243,14 +247,16 @@
                     try {
                         btnText.innerHTML = `⏳ Saving ${i + 1}/${globalUrlsArray.length}...`;
                         
-                        // Fetch using Proxy + Force JPEG Format
-                        const response = await fetch(CORS_PROXY + encodeURIComponent(url));
+                        // 1. Direct fetch (No Proxy)
+                        const response = await fetch(url);
                         if (!response.ok) throw new Error("Fetch failed");
                         
+                        // 2. Force OS to recognize as JPEG to fix "Unsupported File" bug
                         const arrayBuffer = await response.arrayBuffer();
                         const blob = new Blob([arrayBuffer], { type: "image/jpeg" });
                         const bUrl = window.URL.createObjectURL(blob);
                         
+                        // 3. Trigger Download Dialog
                         const a = document.createElement('a');
                         a.style.display = 'none';
                         a.href = bUrl;
@@ -258,15 +264,18 @@
                         document.body.appendChild(a);
                         a.click();
                         
-                        setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(bUrl); }, 5000);
+                        setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(bUrl); }, 2000);
 
-                        // 🚀 1.5 Second delay so the browser can natively process the save dialogue
+                        // 🚀 1.5 Second delay so the OS can prompt "Where do you want to save this?"
                         await new Promise(resolve => setTimeout(resolve, 1500));
                         
                     } catch (err) {
                         console.error("Failed on image", i);
-                        // If it fails, fallback to opening it in a new tab so the user can still get it
-                        window.open(url, '_blank');
+                        if (window.Telegram && window.Telegram.WebApp) {
+                            window.Telegram.WebApp.openLink(url);
+                        } else {
+                            window.open(url, '_blank');
+                        }
                     }
                 }
                 btnText.innerHTML = "✅ All Saved!";

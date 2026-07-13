@@ -24,7 +24,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 60px; /* Space for floating button */
+            padding-top: 70px; /* Space for the floating button */
         }
         .glass-container {
             background: var(--glass-bg);
@@ -59,10 +59,10 @@
             border: 1px solid var(--accent);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            padding: 10px 18px;
+            padding: 12px 20px;
             border-radius: 30px;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             cursor: pointer;
             z-index: 1000;
             box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2);
@@ -80,7 +80,6 @@
             transform: scale(0.95);
         }
 
-        /* Clean Image & Video styling */
         .media-content img, .media-content video {
             width: 100%;
             border-radius: 12px;
@@ -106,12 +105,7 @@
             color: var(--accent);
             text-decoration: none;
             font-weight: bold;
-            transition: all 0.3s ease;
             cursor: pointer;
-        }
-        .footer a:hover {
-            color: #fff;
-            text-shadow: 0 0 8px var(--accent);
         }
         .credits-container {
             display: flex;
@@ -125,9 +119,9 @@
 </head>
 <body>
 
-    <!-- 🚀 FLOATING BUTTON -->
+    <!-- 🚀 FLOATING DOWNLOAD BUTTON -->
     <button class="floating-dl-btn" id="floatingDlBtn" onclick="handleMasterDownload()" style="display: none;">
-        <span>📥 Download</span>
+        <span id="btnText">📥 Download</span>
     </button>
 
     <div class="glass-container">
@@ -148,9 +142,6 @@
         let globalUrlsArray = [];
         let isVideoMode = false;
         let activeRawVideoUrl = "";
-        
-        // 🚀 THE CORS PROXY (Fixes the external browser redirect)
-        const CORS_PROXY = "https://corsproxy.io/?";
 
         function openTgLink(url) {
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
@@ -176,12 +167,13 @@
         const videoUrl = params.get('video');
         const contentBox = document.getElementById('mediaContent');
         const dlBtn = document.getElementById('floatingDlBtn');
+        const btnText = document.getElementById('btnText');
 
         if (videoUrl) {
             // VIDEO MODE
             isVideoMode = true;
             activeRawVideoUrl = decodeURIComponent(videoUrl);
-            dlBtn.innerHTML = "📥 Download Video";
+            btnText.innerHTML = "📥 Download Video";
             dlBtn.style.display = "flex";
             
             contentBox.innerHTML = `
@@ -193,7 +185,7 @@
         } else if (imgData) {
             // IMAGE MODE
             isVideoMode = false;
-            dlBtn.innerHTML = "📥 Download Images";
+            btnText.innerHTML = "📥 Download Images";
             dlBtn.style.display = "flex";
 
             try {
@@ -210,20 +202,22 @@
             } catch (e) {
                 contentBox.innerHTML = "<p>Error rendering images.</p>";
             }
-        } else {
-            contentBox.innerHTML = "<p>No media data found.</p>";
         }
 
-        // 🚀 ONE-CLICK NATIVE DOWNLOADER (Sequential without zipping)
+        // 🚀 THE NEW RAW DOWNLOADER (Fixes the Unsupported Bug!)
         async function handleMasterDownload() {
             dlBtn.disabled = true;
 
             if (isVideoMode) {
-                dlBtn.innerHTML = "⏳ Saving...";
+                btnText.innerHTML = "⏳ Processing...";
                 try {
-                    // Fetch through proxy so it stays in the Web App
-                    const response = await fetch(CORS_PROXY + encodeURIComponent(activeRawVideoUrl));
-                    const blob = await response.blob();
+                    // Fetch raw binary data directly
+                    const response = await fetch(activeRawVideoUrl);
+                    if (!response.ok) throw new Error("Fetch failed");
+                    const arrayBuffer = await response.arrayBuffer();
+                    
+                    // 🚀 BUG FIX: Force the OS to recognize this as an MP4 Video
+                    const blob = new Blob([arrayBuffer], { type: "video/mp4" });
                     const bUrl = window.URL.createObjectURL(blob);
                     
                     const a = document.createElement('a');
@@ -233,28 +227,35 @@
                     document.body.appendChild(a);
                     a.click();
                     
-                    setTimeout(() => {
-                        document.body.removeChild(a);
-                        window.URL.revokeObjectURL(bUrl);
-                    }, 1000);
-                    
-                    dlBtn.innerHTML = "✅ Saved!";
+                    setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(bUrl); }, 2000);
+                    btnText.innerHTML = "✅ Video Saved!";
                 } catch (err) {
-                    // If video is too large for device RAM, we MUST use Chrome as a fallback
-                    window.open(activeRawVideoUrl, '_blank');
-                    dlBtn.innerHTML = "📥 Download Video";
+                    // Safety Fallback for heavy videos that crash mobile RAM
+                    if (window.Telegram && window.Telegram.WebApp) {
+                        window.Telegram.WebApp.openLink(activeRawVideoUrl);
+                    } else {
+                        window.open(activeRawVideoUrl, '_blank');
+                    }
+                    btnText.innerHTML = "✅ Opened in Browser";
                 }
             } else {
-                // IMAGE MODE: Sequentially download each image
-                dlBtn.innerHTML = "⏳ Fetching...";
+                // IMAGE MODE: Sequential individual downloads without zips
+                if (globalUrlsArray.length === 0) return;
                 
                 for (let i = 0; i < globalUrlsArray.length; i++) {
                     const url = globalUrlsArray[i];
                     if (!url) continue;
 
                     try {
-                        const response = await fetch(CORS_PROXY + encodeURIComponent(url));
-                        const blob = await response.blob();
+                        btnText.innerHTML = `⏳ Saving ${i + 1}/${globalUrlsArray.length}...`;
+                        
+                        // Fetch raw binary data directly
+                        const response = await fetch(url);
+                        if (!response.ok) throw new Error("Fetch failed");
+                        const arrayBuffer = await response.arrayBuffer();
+                        
+                        // 🚀 BUG FIX: Force the OS to recognize this as a JPEG Image
+                        const blob = new Blob([arrayBuffer], { type: "image/jpeg" });
                         const bUrl = window.URL.createObjectURL(blob);
                         
                         const a = document.createElement('a');
@@ -264,26 +265,23 @@
                         document.body.appendChild(a);
                         a.click();
                         
-                        setTimeout(() => {
-                            document.body.removeChild(a);
-                            window.URL.revokeObjectURL(bUrl);
-                        }, 1000);
+                        setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(bUrl); }, 2000);
 
-                        // 🚀 800ms delay to prevent browser from blocking multiple downloads
-                        await new Promise(resolve => setTimeout(resolve, 800));
+                        // 🚀 1.5 Second delay so the browser can ask "Where do you want to save this?"
+                        await new Promise(resolve => setTimeout(resolve, 1500));
                         
                     } catch (err) {
-                        console.error("Failed to download image", i);
+                        console.error("Failed on image", i);
                     }
                 }
-                dlBtn.innerHTML = "✅ All Saved!";
+                btnText.innerHTML = "✅ All Saved!";
             }
 
-            // Reset button after 3 seconds
+            // Reset button text after 4 seconds
             setTimeout(() => {
-                dlBtn.innerHTML = isVideoMode ? "📥 Download Video" : "📥 Download Images";
+                btnText.innerHTML = isVideoMode ? "📥 Download Video" : "📥 Download Images";
                 dlBtn.disabled = false;
-            }, 3000);
+            }, 4000);
         }
 
         if (window.Telegram && window.Telegram.WebApp) {

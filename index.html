@@ -32,9 +32,8 @@
         .app-title { font-size: 1.5rem; font-weight: 800; color: var(--btn-color); margin: 0; }
         .account-btn { background: var(--sec-bg-color); border: 2px solid var(--btn-color); color: var(--text-color); padding: 8px 18px; border-radius: 20px; font-weight: bold; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 8px; }
         
-        .quota-header-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 15px; margin-bottom: 8px; }
         .quota-text { font-size: 0.85rem; color: var(--hint-color); font-weight: bold; text-align: right; }
-        .compact-btn { background: transparent; border: none; color: var(--btn-color); font-weight: bold; cursor: pointer; font-size: 0.95rem; padding: 0; outline: none;}
+        .compact-btn { background: transparent; border: none; color: var(--btn-color); font-weight: bold; cursor: pointer; font-size: 0.95rem; padding: 0; outline: none; transition: 0.2s;}
         .compact-btn:active { opacity: 0.7; }
 
         /* Progress Bar */
@@ -107,7 +106,6 @@
         .account-btn { background: var(--glass-bg); border: 1px solid rgba(56, 189, 248, 0.4); color: white; padding: 10px 20px; border-radius: 20px; font-weight: 800; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .account-btn:active { transform: scale(0.95); }
 
-        .quota-header-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 18px; margin-bottom: 8px; }
         .quota-text { font-size: 0.85rem; color: var(--text-muted); font-weight: 800; text-align: right; letter-spacing: 0.5px;}
         .compact-btn { background: transparent; border: none; color: var(--accent-color); font-weight: 800; cursor: pointer; font-size: 0.95rem; padding: 0; outline: none; transition: 0.2s;}
         .compact-btn:active { opacity: 0.7; transform: scale(0.95); }
@@ -252,15 +250,22 @@
             </button>
         </div>
         
-        <div class="quota-header-row" id="quotaHeaderRow">
-            <button class="compact-btn" id="selectAllBtn" onclick="toggleSelectAll()" style="display:none;">✅ Select All</button>
+        <!-- Always Visible Quota -->
+        <div style="display: flex; justify-content: flex-end; margin-top: 15px; margin-bottom: 8px;">
             <div class="quota-text" id="quotaHeader">0 / 0 Files Selected</div>
         </div>
         <div class="progress-container">
             <div class="progress-fill" id="quotaFill"></div>
         </div>
 
-        <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search your files..." onkeyup="debouncedSearch()">
+        <!-- Only Visible on Cloud Tab -->
+        <div id="tabSpecificHeader">
+            <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search your files..." onkeyup="debouncedSearch()">
+            
+            <div style="display: flex; justify-content: flex-end; margin-top: 12px; margin-bottom: -5px;">
+                <button class="compact-btn" id="selectAllBtn" onclick="toggleSelectAll()" style="display:none;">✅ Select These 10</button>
+            </div>
+        </div>
     </div>
 
     <!-- 📂 TAB 1: CLOUD FILES -->
@@ -552,17 +557,21 @@
         function updateSelectAllButton() {
             const btn = document.getElementById('selectAllBtn');
             if (!btn) return;
-            if (filteredMovies.length === 0) {
+            
+            const visible = getPaginatedItems();
+            const visibleCount = visible.length;
+
+            if (filteredMovies.length === 0 || visibleCount === 0) {
                 btn.style.display = 'none';
                 return;
             }
             btn.style.display = 'block';
             
             if (isAllVisibleSelected()) {
-                btn.innerText = "❌ Deselect All";
+                btn.innerText = `❌ Deselect These ${visibleCount}`;
                 btn.style.color = "var(--danger-color)";
             } else {
-                btn.innerText = "✅ Select All";
+                btn.innerText = `✅ Select These ${visibleCount}`;
                 btn.style.color = ""; 
             }
         }
@@ -837,12 +846,10 @@
             document.getElementById(`nav-${tabId}`).classList.add('active');
             
             if(tabId === 'files') {
-                document.getElementById('searchInput').style.display = 'block';
-                document.getElementById('quotaHeaderRow').style.display = 'flex';
+                document.getElementById('tabSpecificHeader').style.display = 'block';
                 renderFilesList();
             } else {
-                document.getElementById('searchInput').style.display = 'none';
-                document.getElementById('quotaHeaderRow').style.display = 'none';
+                document.getElementById('tabSpecificHeader').style.display = 'none';
             }
             
             if(tabId === 'manager') renderManager();

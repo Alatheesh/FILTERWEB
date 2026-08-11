@@ -26,15 +26,25 @@
             --danger-color: #ef4444;
             --glass-border: rgba(255,255,255,0.1);
         }
-        body { font-family: -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; padding-bottom: 180px; user-select: none; overflow-x: hidden; }
+        body { font-family: -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; padding-bottom: 180px; user-select: none; overflow-x: hidden; }
         
+        .sticky-wrapper { position: sticky; top: 0; z-index: 50; background: rgba(23, 33, 43, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 20px 20px 10px 20px; border-bottom: 1px solid var(--glass-border); }
         .app-title { font-size: 1.5rem; font-weight: 800; color: var(--btn-color); margin: 0; }
         .account-btn { background: var(--sec-bg-color); border: 2px solid var(--btn-color); color: var(--text-color); padding: 8px 18px; border-radius: 20px; font-weight: bold; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 8px; }
         
-        .search-box { width: 100%; padding: 16px; margin-bottom: 20px; border-radius: 16px; border: 1px solid var(--hint-color); background-color: var(--sec-bg-color); color: var(--text-color); font-size: 1.05rem; box-sizing: border-box; outline: none; }
+        /* Progress Bar */
+        .progress-container { width: 100%; height: 8px; background: var(--sec-bg-color); border-radius: 10px; margin: 15px 0; overflow: hidden; border: 1px solid var(--glass-border); }
+        .progress-fill { height: 100%; background: var(--btn-color); width: 0%; transition: width 0.3s ease; }
+        .quota-text { font-size: 0.85rem; color: var(--hint-color); font-weight: bold; text-align: right; margin-bottom: 10px; }
+
+        .search-actions { display: flex; gap: 10px; margin-bottom: 10px; }
+        .search-box { flex: 1; padding: 14px; border-radius: 12px; border: 1px solid var(--hint-color); background-color: var(--sec-bg-color); color: var(--text-color); font-size: 1rem; outline: none; }
         .search-box:focus { border-color: var(--btn-color); }
-        
+        .select-all-btn { background: var(--sec-bg-color); border: 1px solid var(--btn-color); color: var(--btn-color); padding: 0 15px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+        .select-all-btn:active { background: var(--btn-color); color: var(--btn-text); }
+
         /* ✨ SPACIOUS CARDS */
+        .content-padding { padding: 0 20px; }
         .card { background-color: var(--sec-bg-color); margin-bottom: 15px; padding: 18px; border-radius: 16px; display: flex; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15); gap: 12px; width: 100%; box-sizing: border-box; }
         .checkbox-container { display: flex; align-items: center; width: 100%; cursor: pointer; flex: 1; min-width: 0; }
         .movie-info { display: flex; flex-direction: column; flex: 1; overflow: hidden; min-width: 0; }
@@ -72,11 +82,6 @@
         .tb-move { background: var(--btn-color); }
         .tb-del { background: var(--danger-color); }
         .tb-cancel { background: var(--hint-color); flex: 1 1 100%;}
-        
-        .spinner { width: 45px; height: 45px; border: 4px solid var(--sec-bg-color); border-top: 4px solid var(--btn-color); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 40px auto 15px auto; }
-        .loading-text { text-align: center; color: var(--hint-color); font-weight: 500; font-size: 1.05rem; }
-        .preview-item { font-size: 1rem; margin-bottom: 15px; display: flex; align-items: flex-start;}
-        .preview-num { color: var(--btn-color); font-weight: bold; width: 35px; flex-shrink: 0;}
     </style>
 
     <!-- ========================================== -->
@@ -94,19 +99,29 @@
             --accent-color: #38bdf8;
             --danger-color: #ef4444;
         }
-        body { font-family: -apple-system, sans-serif; background-color: var(--bg-dark); color: var(--text-main); margin: 0; padding: 20px; padding-bottom: 190px; user-select: none; overflow-x: hidden; }
+        body { font-family: -apple-system, sans-serif; background-color: var(--bg-dark); color: var(--text-main); margin: 0; padding: 0; padding-bottom: 190px; user-select: none; overflow-x: hidden; }
         
+        .sticky-wrapper { position: sticky; top: 0; z-index: 50; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); padding: 20px 20px 15px 20px; border-bottom: 1px solid var(--glass-border); box-shadow: 0 4px 30px rgba(0,0,0,0.3); }
         .app-title { font-size: 1.6rem; font-weight: 900; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
-        .account-btn { background: var(--glass-bg); border: 1px solid rgba(56, 189, 248, 0.4); color: white; padding: 10px 20px; border-radius: 20px; font-weight: 800; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); display: flex; align-items: center; gap: 8px; backdrop-filter: blur(10px); transition: 0.2s; }
+        .account-btn { background: var(--glass-bg); border: 1px solid rgba(56, 189, 248, 0.4); color: white; padding: 10px 20px; border-radius: 20px; font-weight: 800; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .account-btn:active { transform: scale(0.95); }
 
-        .search-box { width: 100%; padding: 18px; margin-bottom: 25px; border-radius: 16px; border: 1px solid var(--glass-border); background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: var(--text-main); font-size: 1.05rem; box-sizing: border-box; outline: none; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .progress-container { width: 100%; height: 6px; background: rgba(0,0,0,0.3); border-radius: 10px; margin: 15px 0 10px 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent-gradient); width: 0%; transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
+        .quota-text { font-size: 0.85rem; color: var(--text-muted); font-weight: 800; text-align: right; margin-bottom: 12px; letter-spacing: 0.5px;}
+
+        .search-actions { display: flex; gap: 12px; }
+        .search-box { flex: 1; padding: 16px; border-radius: 14px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); font-size: 1.05rem; outline: none; transition: all 0.3s ease; }
         .search-box:focus { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.07); box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); }
         .search-box::placeholder { color: var(--text-muted); }
         
+        .select-all-btn { background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: var(--accent-color); padding: 0 16px; border-radius: 14px; font-weight: 800; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+        .select-all-btn:active { background: var(--accent-gradient); color: white; border-color: transparent; }
+
         /* ✨ SPACIOUS PREMIUM CARDS */
-        .card { background: var(--glass-bg); margin-bottom: 15px; padding: 20px; border-radius: 18px; display: flex; align-items: center; border: 1px solid var(--glass-border); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s; gap: 12px; width: 100%; box-sizing: border-box; }
-        .card:active { transform: scale(0.97); background: var(--glass-highlight); }
+        .content-padding { padding: 20px; }
+        .card { background: var(--glass-bg); margin-bottom: 15px; padding: 20px; border-radius: 18px; display: flex; align-items: center; border: 1px solid var(--glass-border); box-shadow: 0 6px 20px rgba(0,0,0,0.15); transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); gap: 12px; width: 100%; box-sizing: border-box; }
+        .card:active { transform: scale(0.98); background: var(--glass-highlight); }
         .checkbox-container { display: flex; align-items: center; width: 100%; cursor: pointer; flex: 1; min-width: 0; }
         .movie-info { display: flex; flex-direction: column; flex: 1; overflow: hidden; min-width: 0; }
         .drag-handle { margin-right: 8px; color: var(--text-muted); font-size: 1.4rem; cursor: grab; padding: 5px; flex-shrink: 0; }
@@ -125,13 +140,13 @@
         input[type="checkbox"]:checked::after { content: "✓"; position: absolute; color: white; font-size: 16px; font-weight: 900; left: 5px; top: 2px; }
         .movie-size { font-size: 0.85rem; color: var(--accent-color); margin-top: 5px; font-weight: 700; }
         
-        select.sort-dropdown { background: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--glass-border); padding: 8px 12px; border-radius: 10px; outline: none; font-weight: 700; font-size: 0.95rem; backdrop-filter: blur(10px); }
+        select.sort-dropdown { background: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--glass-border); padding: 8px 12px; border-radius: 10px; outline: none; font-weight: 700; font-size: 0.95rem; }
         .action-row { display: flex; justify-content: space-between; width: 100%; margin-top: 20px; gap: 15px; }
         .action-btn { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); font-weight: 700; cursor: pointer; transition: 0.2s;}
         .action-btn:active { background: rgba(255,255,255,0.1); }
         
         .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; margin-bottom: 30px;}
-        .page-btn { background: var(--glass-bg); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 12px 20px; border-radius: 12px; font-weight: 800; backdrop-filter: blur(5px);}
+        .page-btn { background: var(--glass-bg); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 12px 20px; border-radius: 12px; font-weight: 800;}
         .page-btn:disabled { opacity: 0.3; border-color: var(--text-muted); color: var(--text-muted); }
         
         .fab-btn { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 380px; background: var(--accent-gradient); color: white; border: none; padding: 18px; border-radius: 18px; font-size: 1.15rem; font-weight: 800; box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4); cursor: pointer; z-index: 90; transition: transform 0.2s, box-shadow 0.2s; }
@@ -147,24 +162,26 @@
         .tb-move { background: var(--glass-highlight); border: 1px solid var(--glass-border); }
         .tb-del { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5;}
         .tb-cancel { background: var(--accent-gradient); flex: 1 1 100%; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);}
-        
-        .spinner { width: 50px; height: 50px; border: 4px solid var(--glass-bg); border-top: 4px solid var(--accent-color); border-radius: 50%; animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite; margin: 50px auto 15px auto; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        .loading-text { text-align: center; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; font-size: 1.05rem;}
-        .preview-item { font-size: 1.05rem; margin-bottom: 16px; display: flex; align-items: flex-start;}
-        .preview-num { color: var(--accent-color); font-weight: 900; width: 40px; flex-shrink: 0;}
     </style>
 
-    <!-- Global Layout Elements, Headers & Modal Styles -->
+    <!-- Global Layout Elements & Animations -->
     <style>
-        /* Top Header Area */
-        .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border); }
+        .top-header { display: flex; justify-content: space-between; align-items: center; }
         
-        /* Animated Join Channel Banner */
-        .channel-banner { background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); border-radius: 18px; padding: 20px; display: flex; align-items: center; justify-content: space-between; color: white; box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4); margin-top: 25px; margin-bottom: 10px; cursor: pointer; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.2); }
+        /* 🦴 SKELETON LOADER ANIMATIONS */
+        .skeleton-card { background: var(--sec-bg-color, rgba(255,255,255,0.05)); border-radius: 16px; height: 75px; margin-bottom: 15px; position: relative; overflow: hidden; border: 1px solid var(--glass-border, rgba(255,255,255,0.05)); }
+        .skeleton-card::after { content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 100% { left: 100%; } }
+
+        /* 🍞 TOAST NOTIFICATION */
+        .toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.95); border: 1px solid #38bdf8; color: white; padding: 14px 24px; border-radius: 20px; font-weight: 700; z-index: 9999; backdrop-filter: blur(10px); transition: bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); pointer-events: none;}
+        .toast.show { bottom: 120px; }
+        .toast.error { border-color: #ef4444; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2); }
+
+        .channel-banner { background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); border-radius: 18px; padding: 20px; display: flex; align-items: center; justify-content: space-between; color: white; box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4); margin-top: 25px; margin-bottom: 10px; cursor: pointer; transition: transform 0.2s; border: 1px solid rgba(255,255,255,0.2); }
         .channel-banner:active { transform: scale(0.96); }
         .cb-content { display: flex; flex-direction: column; gap: 6px; }
-        .cb-title { font-size: 1.15rem; font-weight: 900; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .cb-title { font-size: 1.15rem; font-weight: 900; letter-spacing: 0.5px; }
         .cb-subtitle { font-size: 0.9rem; opacity: 0.9; font-weight: 600; }
         .cb-icon { font-size: 2.2rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); animation: floatBannerIcon 3s ease-in-out infinite; }
         @keyframes floatBannerIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
@@ -184,7 +201,7 @@
         /* 👑 ALL MODALS STYLES */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 9999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; padding: 20px; }
         .modal-overlay.active { display: flex; opacity: 1; }
-        .glass-modal { background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 20px 50px rgba(0,0,0,0.7), inset 0 0 20px rgba(56, 189, 248, 0.1); border-radius: 24px; padding: 30px 25px; width: 100%; max-width: 350px; text-align: center; transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); box-sizing: border-box; }
+        .glass-modal { background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 20px 50px rgba(0,0,0,0.7), inset 0 0 20px rgba(56, 189, 248, 0.1); border-radius: 24px; padding: 30px 25px; width: 100%; max-width: 350px; text-align: center; transform: scale(0.8); transition: transform 0.3s; box-sizing: border-box; }
         .modal-overlay.active .glass-modal { transform: scale(1); }
         .modal-icon { font-size: 3.5rem; margin-bottom: 10px; animation: floatIcon 2s ease-in-out infinite; }
         @keyframes floatIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
@@ -194,20 +211,15 @@
         .modal-actions { display: flex; flex-direction: column; gap: 12px; margin-top: 25px; }
         .modal-btn { padding: 16px; border-radius: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; border: none; transition: 0.2s; }
         .btn-upgrade { background: linear-gradient(135deg, #38bdf8 0%, #8b5cf6 100%); color: white; box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4); }
-        .btn-upgrade:active { transform: scale(0.96); }
         .btn-close { background: rgba(255,255,255,0.1); color: #f8fafc; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-close:active { background: rgba(255,255,255,0.2); }
 
-        /* 👤 ACCOUNT GRID INSIDE MODAL */
         .account-details { display: grid; grid-template-columns: 1fr; gap: 12px; text-align: left; background: rgba(0,0,0,0.4); padding: 18px; border-radius: 16px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.1); }
         .acc-row { display: flex; justify-content: space-between; font-size: 0.95rem; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 10px; align-items: center; }
-        .acc-row:last-child { border-bottom: none; padding-bottom: 0; }
         .acc-label { color: #94a3b8; font-weight: 600; }
         .acc-value { font-weight: 800; color: white; text-align: right; }
         .acc-value.highlight { color: #38bdf8; }
     </style>
 
-    <!-- 🚀 THE THEME SWITCHER LOGIC -->
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const userTier = urlParams.get('tier') || 'free'; 
@@ -222,30 +234,44 @@
 </head>
 <body>
 
-    <!-- Ambient Glowing Backgrounds -->
     <div id="premium-blobs">
         <div class="ambient-blob blob-1"></div>
         <div class="ambient-blob blob-2"></div>
     </div>
 
-    <!-- 👤 TOP HEADER -->
-    <div class="top-header">
-        <h2 class="app-title">📦 Delivery</h2>
-        <button class="account-btn" onclick="openAccountModal()">
-            <span>👤 Account</span>
-        </button>
+    <!-- 🍞 TOAST NOTIFICATION SYSTEM -->
+    <div id="toast" class="toast"></div>
+
+    <!-- 📌 STICKY HEADER WRAPPER -->
+    <div class="sticky-wrapper">
+        <div class="top-header">
+            <h2 class="app-title">📦 Delivery</h2>
+            <button class="account-btn" onclick="openAccountModal()">
+                <span>👤 Account</span>
+            </button>
+        </div>
+        
+        <div class="quota-text" id="quotaHeader">0 / 0 Files Selected</div>
+        <div class="progress-container">
+            <div class="progress-fill" id="quotaFill"></div>
+        </div>
+
+        <div class="search-actions" id="searchBarBlock">
+            <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search your files..." onkeyup="debouncedSearch()">
+            <button class="select-all-btn" onclick="selectAllOnPage()">✅ Select All</button>
+        </div>
     </div>
 
     <!-- 📂 TAB 1: CLOUD FILES -->
-    <div id="tab-files" class="tab-content active">
-        <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search your files..." onkeyup="debouncedSearch()">
-        
-        <div id="loadingWrapper">
-            <div class="spinner"></div>
-            <div class="loading-text" id="loadingText">Syncing Secure Cloud...</div>
+    <div id="tab-files" class="tab-content content-padding active">
+        <!-- Skeleton Loaders injected here before JS runs -->
+        <div id="movie-list">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
         </div>
-        
-        <div id="movie-list"></div>
         
         <div class="pagination" id="paginationBar" style="display: none;">
             <button class="page-btn" id="prevBtn" onclick="changePage(-1)">◀ Prev</button>
@@ -253,7 +279,6 @@
             <button class="page-btn" id="nextBtn" onclick="changePage(1)">Next ▶</button>
         </div>
         
-        <!-- 🚀 JOIN CHANNEL BANNER -->
         <div class="channel-banner" id="joinChannelBtn">
             <div class="cb-content">
                 <span class="cb-title">✨ JOIN MAIN CHANNEL</span>
@@ -266,7 +291,7 @@
     </div>
 
     <!-- ⭐ TAB 2: QUEUE MANAGER -->
-    <div id="tab-manager" class="tab-content">
+    <div id="tab-manager" class="tab-content content-padding">
         <div class="card info-card">
             <div class="info-header">⭐ Collection Manager</div>
             <div class="info-row"><span class="info-label">📦 Selected:</span><span class="info-value" id="mgr-count">0 Files</span></div>
@@ -285,7 +310,6 @@
         </div>
         <div id="manager-list"></div>
         
-        <!-- 🚀 JOIN CHANNEL BANNER -->
         <div class="channel-banner" id="joinChannelBtn2">
             <div class="cb-content">
                 <span class="cb-title">✨ JOIN MAIN CHANNEL</span>
@@ -296,7 +320,7 @@
     </div>
 
     <!-- 👀 TAB 3: PREVIEW -->
-    <div id="tab-preview" class="tab-content">
+    <div id="tab-preview" class="tab-content content-padding">
         <div class="card info-card" style="margin-bottom:20px;">
             <div class="info-header">👀 Delivery Preview</div>
             <div style="font-size:0.95rem; color:var(--text-muted); text-align:center; font-weight:500;">Files will be delivered to your PM in this exact sequence.</div>
@@ -320,13 +344,13 @@
         <div class="nav-item" id="nav-preview" onclick="switchTab('preview')">👀 Review</div>
     </div>
 
-    <!-- 💎 CUSTOM VIP UPGRADE MODAL -->
+    <!-- MODALS -->
     <div id="vipModalOverlay" class="modal-overlay">
         <div class="glass-modal">
             <div class="modal-icon">👑</div>
             <h3 class="modal-title">Tier Limit Reached!</h3>
             <p class="modal-desc">Your current plan limits you to a maximum of <b id="modalLimitText" style="color:#38bdf8;">0</b> files per batch.</p>
-            <p class="modal-desc">Upgrade to a VIP plan to unlock unlimited batch sizes and premium features!</p>
+            <p class="modal-desc">Upgrade to a VIP plan to unlock unlimited batch sizes!</p>
             <div class="modal-actions">
                 <button class="modal-btn btn-upgrade" onclick="upgradeVIP()">💎 Upgrade to VIP</button>
                 <button class="modal-btn btn-close" onclick="closeVIPModal()">Close</button>
@@ -334,35 +358,17 @@
         </div>
     </div>
 
-    <!-- 👤 ACCOUNT DETAILS MODAL -->
     <div id="accountModalOverlay" class="modal-overlay">
         <div class="glass-modal">
             <div class="modal-icon">👤</div>
             <h3 class="modal-title" style="color:white;">My Account</h3>
-            
             <div class="account-details">
-                <div class="acc-row">
-                    <span class="acc-label">Name:</span>
-                    <span class="acc-value" id="acc-name">Loading...</span>
-                </div>
-                <div class="acc-row">
-                    <span class="acc-label">User ID:</span>
-                    <span class="acc-value" id="acc-uid">Loading...</span>
-                </div>
-                <div class="acc-row">
-                    <span class="acc-label">Current Plan:</span>
-                    <span class="acc-value highlight" id="acc-plan">Loading...</span>
-                </div>
-                <div class="acc-row">
-                    <span class="acc-label">Expiry Date:</span>
-                    <span class="acc-value" id="acc-exp">Loading...</span>
-                </div>
-                <div class="acc-row">
-                    <span class="acc-label">Batch Limit:</span>
-                    <span class="acc-value highlight" id="acc-limit">0 Files</span>
-                </div>
+                <div class="acc-row"><span class="acc-label">Name:</span><span class="acc-value" id="acc-name">Loading...</span></div>
+                <div class="acc-row"><span class="acc-label">User ID:</span><span class="acc-value" id="acc-uid">Loading...</span></div>
+                <div class="acc-row"><span class="acc-label">Current Plan:</span><span class="acc-value highlight" id="acc-plan">Loading...</span></div>
+                <div class="acc-row"><span class="acc-label">Expiry Date:</span><span class="acc-value" id="acc-exp">Loading...</span></div>
+                <div class="acc-row"><span class="acc-label">Batch Limit:</span><span class="acc-value highlight" id="acc-limit">0 Files</span></div>
             </div>
-
             <div class="modal-actions">
                 <button class="modal-btn btn-close" onclick="closeAccountModal()">Close Window</button>
             </div>
@@ -373,18 +379,16 @@
         const tg = window.Telegram.WebApp;
         tg.expand(); 
 
-        // Extracting standard params
         const botUsername = urlParams.get('bot') || "suchitha1bot"; 
         const shortId = urlParams.get('id'); 
         const dataUrl = urlParams.get('url');
         const userLimit = parseInt(urlParams.get('limit')) || 10;
         
-        // 👤 Extracting User Info Params for the Account Modal
         const userName = urlParams.get('uname') || tg.initDataUnsafe?.user?.first_name || 'User';
         const userId = urlParams.get('uid') || tg.initDataUnsafe?.user?.id || 'Unknown';
         const userPlan = urlParams.get('plan') || (userTier === 'premium' ? 'VIP Premium' : 'Free Tier');
         const userExp = urlParams.get('exp') || 'N/A';
-        const channelLink = urlParams.get('channel') || 'https://t.me/telegram'; // Your channel link
+        const channelLink = urlParams.get('channel') || 'https://t.me/telegram';
 
         let movies = [];
         let filteredMovies = [];
@@ -395,12 +399,33 @@
         let managerSelectedIds = new Set(); 
         let searchTimeout;
 
-        // 🚀 Set up Channel Banner Clicks
         document.getElementById('joinChannelBtn').onclick = () => { tg.openTelegramLink(channelLink); };
         document.getElementById('joinChannelBtn2').onclick = () => { tg.openTelegramLink(channelLink); };
 
-        // 👤 ACCOUNT MODAL FUNCTIONS
+        function hapticSelect() { if(tg.HapticFeedback) tg.HapticFeedback.selectionChanged(); }
+        function hapticSuccess() { if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success'); }
+        function hapticError() { if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error'); }
+
+        function showToast(msg, isError=false) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.className = isError ? 'toast error show' : 'toast show';
+            setTimeout(() => { t.className = 'toast'; }, 3000);
+        }
+
+        // 💾 SCOPED LOCAL STORAGE CACHE ENGINE
+        function saveCache() {
+            if(shortId) localStorage.setItem('queue_' + shortId, JSON.stringify(selectedItems));
+        }
+        function loadCache() {
+            if(shortId) {
+                let saved = localStorage.getItem('queue_' + shortId);
+                if(saved) selectedItems = JSON.parse(saved);
+            }
+        }
+
         function openAccountModal() {
+            hapticSelect();
             document.getElementById('acc-name').innerText = userName;
             document.getElementById('acc-uid').innerText = userId;
             document.getElementById('acc-plan').innerText = userPlan;
@@ -408,19 +433,16 @@
             document.getElementById('acc-limit').innerText = `${userLimit} Files`;
             document.getElementById('accountModalOverlay').classList.add('active');
         }
-        function closeAccountModal() {
-            document.getElementById('accountModalOverlay').classList.remove('active');
-        }
+        function closeAccountModal() { hapticSelect(); document.getElementById('accountModalOverlay').classList.remove('active'); }
 
-        // 💎 VIP MODAL FUNCTIONS
         function showVIPModal() {
+            hapticError();
             document.getElementById('modalLimitText').innerText = userLimit;
             document.getElementById('vipModalOverlay').classList.add('active');
         }
-        function closeVIPModal() {
-            document.getElementById('vipModalOverlay').classList.remove('active');
-        }
+        function closeVIPModal() { hapticSelect(); document.getElementById('vipModalOverlay').classList.remove('active'); }
         function upgradeVIP() {
+            hapticSuccess();
             const upgradeLink = `https://t.me/${botUsername}?start=buyvip`;
             tg.openTelegramLink(upgradeLink);
             setTimeout(() => { tg.close(); }, 150);
@@ -441,6 +463,7 @@
         }
 
         async function loadCloudData() {
+            document.getElementById('quotaHeader').innerText = `0 / ${userLimit} Files Selected`;
             try {
                 const response = await fetch(decodeURIComponent(dataUrl), { cache: "force-cache" });
                 const data = await response.json();
@@ -456,22 +479,18 @@
                 
                 movies = rawArray.map((item, idx) => {
                     const parts = item.split('|');
-                    return { 
-                        t: parts[0], 
-                        s: parts[1] || 'Unknown', 
-                        originalIndex: idx,
-                        sizeBytes: parseSize(parts[1] || '0 B')
-                    };
+                    return { t: parts[0], s: parts[1] || 'Unknown', originalIndex: idx, sizeBytes: parseSize(parts[1] || '0 B') };
                 });
                 
+                loadCache(); // 💾 Restore state if they closed the app
                 filteredMovies = movies;
-                document.getElementById('loadingWrapper').style.display = 'none';
+                
                 document.getElementById('paginationBar').style.display = 'flex';
                 document.getElementById('continueBtn').style.display = 'block';
+                updateProgressUI();
                 renderFilesList();
             } catch (e) {
-                document.getElementById('loadingText').innerText = "❌ Error loading secure database.";
-                document.querySelector('.spinner').style.display = 'none';
+                document.getElementById('movie-list').innerHTML = '<div style="text-align:center; margin-top:40px; color:var(--danger-color); font-weight:bold;">❌ Error loading secure database.</div>';
             }
         }
 
@@ -504,12 +523,14 @@
             document.getElementById('pageInfo').innerText = `Page ${currentPage} of ${Math.ceil(filteredMovies.length / itemsPerPage) || 1}`;
             document.getElementById('prevBtn').disabled = currentPage === 1;
             document.getElementById('nextBtn').disabled = end >= filteredMovies.length;
-            updateContinueButton();
+            updateProgressUI();
         }
 
         function changePage(direction) {
+            hapticSelect();
             currentPage += direction;
             renderFilesList();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function debouncedSearch() {
@@ -529,7 +550,36 @@
             }, 150);
         }
 
+        // 🧠 SMART SELECT ALL ON PAGE
+        function selectAllOnPage() {
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const paginatedItems = filteredMovies.slice(start, end);
+            
+            let addedCount = 0;
+            for(let movie of paginatedItems) {
+                if(!selectedItems.some(m => m.originalIndex === movie.originalIndex)) {
+                    if(selectedItems.length >= userLimit) break;
+                    selectedItems.push(movie);
+                    addedCount++;
+                }
+            }
+            
+            if(addedCount > 0) {
+                hapticSuccess();
+                showToast(`✅ Added ${addedCount} files to Queue!`);
+                saveCache(); // 💾 Save immediately
+            } else if (selectedItems.length >= userLimit) {
+                showVIPModal();
+            } else {
+                hapticError();
+                showToast("All items on this page are already selected.", true);
+            }
+            renderFilesList();
+        }
+
         function toggleFileSelection(checkbox) {
+            hapticSelect();
             const id = parseInt(checkbox.value);
             if (checkbox.checked) {
                 if (selectedItems.length >= userLimit) {
@@ -537,20 +587,26 @@
                     showVIPModal(); 
                     return;
                 }
-                
                 const movie = movies.find(m => m.originalIndex === id);
                 if(movie && !selectedItems.some(m => m.originalIndex === id)) selectedItems.push(movie);
             } else {
                 selectedItems = selectedItems.filter(m => m.originalIndex !== id);
                 managerSelectedIds.delete(id); 
             }
-            updateContinueButton();
+            saveCache(); // 💾 Save immediately
+            updateProgressUI();
             checkToolbarVisibility();
         }
 
-        function updateContinueButton() {
+        function updateProgressUI() {
+            const percent = (selectedItems.length / userLimit) * 100;
+            document.getElementById('quotaFill').style.width = `${Math.min(percent, 100)}%`;
+            document.getElementById('quotaHeader').innerText = `${selectedItems.length} / ${userLimit} Files Selected`;
             document.getElementById('continueBtn').innerText = `Continue (${selectedItems.length} / ${userLimit})`;
             document.getElementById('nav-manager').innerText = `⭐ Queue (${selectedItems.length})`;
+            
+            if(percent >= 100) document.getElementById('quotaFill').style.background = 'var(--danger-color)';
+            else document.getElementById('quotaFill').style.background = 'var(--accent-gradient)';
         }
 
         function renderManager() {
@@ -570,7 +626,6 @@
             selectedItems.forEach((movie, index) => {
                 const div = document.createElement('div');
                 div.className = 'card';
-
                 const isChecked = managerSelectedIds.has(movie.originalIndex) ? 'checked' : '';
 
                 div.innerHTML = `
@@ -593,9 +648,11 @@
                 animation: 150,
                 ghostClass: 'sortable-ghost',
                 onEnd: function (evt) {
+                    hapticSelect();
                     const movedItem = selectedItems.splice(evt.oldIndex, 1)[0];
                     selectedItems.splice(evt.newIndex, 0, movedItem);
                     document.getElementById('sortDrop').value = 'manual';
+                    saveCache(); // 💾 Save reorder
                 }
             });
 
@@ -603,32 +660,28 @@
         }
 
         function removeSingle(id) {
+            hapticSelect();
             selectedItems = selectedItems.filter(m => m.originalIndex !== id);
             managerSelectedIds.delete(id);
+            saveCache(); // 💾 Save
             renderManager();
-            updateContinueButton();
+            updateProgressUI();
             renderFilesList(); 
         }
 
         function applySort() {
+            hapticSelect();
             const val = document.getElementById('sortDrop').value;
             if(val === 'size') selectedItems.sort((a, b) => b.sizeBytes - a.sizeBytes);
+            saveCache(); // 💾 Save
             renderManager();
         }
 
-        function reverseOrder() {
-            selectedItems.reverse();
-            document.getElementById('sortDrop').value = 'manual';
-            renderManager();
-        }
-
-        function resetOrder() {
-            selectedItems.sort((a, b) => a.originalIndex - b.originalIndex);
-            document.getElementById('sortDrop').value = 'manual';
-            renderManager();
-        }
+        function reverseOrder() { hapticSelect(); selectedItems.reverse(); document.getElementById('sortDrop').value = 'manual'; saveCache(); renderManager(); }
+        function resetOrder() { hapticSelect(); selectedItems.sort((a, b) => a.originalIndex - b.originalIndex); document.getElementById('sortDrop').value = 'manual'; saveCache(); renderManager(); }
 
         function toggleManagerSelection(checkbox) {
+            hapticSelect();
             const id = parseInt(checkbox.value);
             if(checkbox.checked) managerSelectedIds.add(id);
             else managerSelectedIds.delete(id);
@@ -644,12 +697,10 @@
             }
         }
 
-        function clearManagerSelection() {
-            managerSelectedIds.clear();
-            renderManager();
-        }
+        function clearManagerSelection() { hapticSelect(); managerSelectedIds.clear(); renderManager(); }
 
         function moveMulti(direction) {
+            hapticSelect();
             const toMove = selectedItems.filter(m => managerSelectedIds.has(m.originalIndex));
             const rest = selectedItems.filter(m => !managerSelectedIds.has(m.originalIndex));
             
@@ -657,13 +708,16 @@
             else selectedItems = [...rest, ...toMove];
             
             document.getElementById('sortDrop').value = 'manual';
+            saveCache(); // 💾 Save
             clearManagerSelection();
         }
 
         function removeMulti() {
+            hapticSelect();
             selectedItems = selectedItems.filter(m => !managerSelectedIds.has(m.originalIndex));
+            saveCache(); // 💾 Save
             clearManagerSelection();
-            updateContinueButton();
+            updateProgressUI();
             renderFilesList();
         }
 
@@ -689,22 +743,31 @@
         }
 
         function switchTab(tabId) {
+            hapticSelect();
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             
             document.getElementById(`tab-${tabId}`).classList.add('active');
             document.getElementById(`nav-${tabId}`).classList.add('active');
             
-            if(tabId === 'files') renderFilesList();
+            if(tabId === 'files') {
+                document.getElementById('searchBarBlock').style.display = 'flex';
+                renderFilesList();
+            } else {
+                document.getElementById('searchBarBlock').style.display = 'none';
+            }
+            
             if(tabId === 'manager') renderManager();
             if(tabId === 'preview') renderPreview();
             
             checkToolbarVisibility();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         async function sendSelected() {
             if (selectedItems.length === 0) {
-                tg.showAlert("No files queued for delivery!");
+                hapticError();
+                showToast("No files queued for delivery!", true);
                 return;
             }
             if (selectedItems.length > userLimit) {
@@ -712,6 +775,7 @@
                 return;
             }
 
+            hapticSuccess();
             const indicesArray = selectedItems.map(m => m.originalIndex);
             
             const btn = document.getElementById('sendBtn');
@@ -745,7 +809,8 @@
                         const parts = cleanUrl.split('/');
                         cloudId = parts[parts.length - 1]; 
                     } catch (e2) {
-                        tg.showAlert("Network error. Please try again.");
+                        hapticError();
+                        showToast("Network error. Please try again.", true);
                         btn.innerText = `📤 Send Securely`;
                         btn.disabled = false;
                         return;

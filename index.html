@@ -28,20 +28,21 @@
         }
         body { font-family: -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; padding-bottom: 180px; user-select: none; overflow-x: hidden; }
         
-        .sticky-wrapper { position: sticky; top: 0; z-index: 50; background: rgba(23, 33, 43, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 20px 20px 10px 20px; border-bottom: 1px solid var(--glass-border); }
+        .sticky-wrapper { position: sticky; top: 0; z-index: 50; background: rgba(23, 33, 43, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 20px 20px 15px 20px; border-bottom: 1px solid var(--glass-border); }
         .app-title { font-size: 1.5rem; font-weight: 800; color: var(--btn-color); margin: 0; }
         .account-btn { background: var(--sec-bg-color); border: 2px solid var(--btn-color); color: var(--text-color); padding: 8px 18px; border-radius: 20px; font-weight: bold; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 8px; }
         
-        /* Progress Bar */
-        .progress-container { width: 100%; height: 8px; background: var(--sec-bg-color); border-radius: 10px; margin: 15px 0; overflow: hidden; border: 1px solid var(--glass-border); }
-        .progress-fill { height: 100%; background: var(--btn-color); width: 0%; transition: width 0.3s ease; }
-        .quota-text { font-size: 0.85rem; color: var(--hint-color); font-weight: bold; text-align: right; margin-bottom: 10px; }
+        .quota-header-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 15px; margin-bottom: 8px; }
+        .quota-text { font-size: 0.85rem; color: var(--hint-color); font-weight: bold; text-align: right; }
+        .compact-btn { background: transparent; border: none; color: var(--btn-color); font-weight: bold; cursor: pointer; font-size: 0.95rem; padding: 0; outline: none;}
+        .compact-btn:active { opacity: 0.7; }
 
-        .search-actions { display: flex; gap: 10px; margin-bottom: 10px; }
-        .search-box { flex: 1; padding: 14px; border-radius: 12px; border: 1px solid var(--hint-color); background-color: var(--sec-bg-color); color: var(--text-color); font-size: 1rem; outline: none; }
+        /* Progress Bar */
+        .progress-container { width: 100%; height: 8px; background: var(--sec-bg-color); border-radius: 10px; margin: 0 0 15px 0; overflow: hidden; border: 1px solid var(--glass-border); }
+        .progress-fill { height: 100%; background: var(--btn-color); width: 0%; transition: width 0.3s ease; }
+        
+        .search-box { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--hint-color); background-color: var(--sec-bg-color); color: var(--text-color); font-size: 1rem; outline: none; box-sizing: border-box;}
         .search-box:focus { border-color: var(--btn-color); }
-        .select-all-btn { background: var(--sec-bg-color); border: 1px solid var(--btn-color); color: var(--btn-color); padding: 0 15px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; white-space: nowrap; }
-        .select-all-btn:active { background: var(--btn-color); color: var(--btn-text); }
 
         /* ✨ SPACIOUS CARDS */
         .content-padding { padding: 0 20px; }
@@ -106,18 +107,18 @@
         .account-btn { background: var(--glass-bg); border: 1px solid rgba(56, 189, 248, 0.4); color: white; padding: 10px 20px; border-radius: 20px; font-weight: 800; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .account-btn:active { transform: scale(0.95); }
 
-        .progress-container { width: 100%; height: 6px; background: rgba(0,0,0,0.3); border-radius: 10px; margin: 15px 0 10px 0; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--accent-gradient); width: 0%; transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
-        .quota-text { font-size: 0.85rem; color: var(--text-muted); font-weight: 800; text-align: right; margin-bottom: 12px; letter-spacing: 0.5px;}
+        .quota-header-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 18px; margin-bottom: 8px; }
+        .quota-text { font-size: 0.85rem; color: var(--text-muted); font-weight: 800; text-align: right; letter-spacing: 0.5px;}
+        .compact-btn { background: transparent; border: none; color: var(--accent-color); font-weight: 800; cursor: pointer; font-size: 0.95rem; padding: 0; outline: none; transition: 0.2s;}
+        .compact-btn:active { opacity: 0.7; transform: scale(0.95); }
 
-        .search-actions { display: flex; gap: 12px; }
-        .search-box { flex: 1; padding: 16px; border-radius: 14px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); font-size: 1.05rem; outline: none; transition: all 0.3s ease; }
+        .progress-container { width: 100%; height: 6px; background: rgba(0,0,0,0.3); border-radius: 10px; margin: 0 0 15px 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent-gradient); width: 0%; transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
+        
+        .search-box { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); font-size: 1.05rem; outline: none; transition: all 0.3s ease; box-sizing: border-box; }
         .search-box:focus { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.07); box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); }
         .search-box::placeholder { color: var(--text-muted); }
         
-        .select-all-btn { background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: var(--accent-color); padding: 0 16px; border-radius: 14px; font-weight: 800; cursor: pointer; transition: 0.2s; white-space: nowrap; }
-        .select-all-btn:active { background: var(--accent-gradient); color: white; border-color: transparent; }
-
         /* ✨ SPACIOUS PREMIUM CARDS */
         .content-padding { padding: 20px; }
         .card { background: var(--glass-bg); margin-bottom: 15px; padding: 20px; border-radius: 18px; display: flex; align-items: center; border: 1px solid var(--glass-border); box-shadow: 0 6px 20px rgba(0,0,0,0.15); transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); gap: 12px; width: 100%; box-sizing: border-box; }
@@ -140,13 +141,13 @@
         input[type="checkbox"]:checked::after { content: "✓"; position: absolute; color: white; font-size: 16px; font-weight: 900; left: 5px; top: 2px; }
         .movie-size { font-size: 0.85rem; color: var(--accent-color); margin-top: 5px; font-weight: 700; }
         
-        select.sort-dropdown { background: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--glass-border); padding: 8px 12px; border-radius: 10px; outline: none; font-weight: 700; font-size: 0.95rem; }
+        select.sort-dropdown { background: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--glass-border); padding: 8px 12px; border-radius: 10px; outline: none; font-weight: 700; font-size: 0.95rem; backdrop-filter: blur(10px); }
         .action-row { display: flex; justify-content: space-between; width: 100%; margin-top: 20px; gap: 15px; }
         .action-btn { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); font-weight: 700; cursor: pointer; transition: 0.2s;}
         .action-btn:active { background: rgba(255,255,255,0.1); }
         
         .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; margin-bottom: 30px;}
-        .page-btn { background: var(--glass-bg); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 12px 20px; border-radius: 12px; font-weight: 800;}
+        .page-btn { background: var(--glass-bg); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 12px 20px; border-radius: 12px; font-weight: 800; backdrop-filter: blur(5px);}
         .page-btn:disabled { opacity: 0.3; border-color: var(--text-muted); color: var(--text-muted); }
         
         .fab-btn { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 380px; background: var(--accent-gradient); color: white; border: none; padding: 18px; border-radius: 18px; font-size: 1.15rem; font-weight: 800; box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4); cursor: pointer; z-index: 90; transition: transform 0.2s, box-shadow 0.2s; }
@@ -251,15 +252,15 @@
             </button>
         </div>
         
-        <div class="quota-text" id="quotaHeader">0 / 0 Files Selected</div>
+        <div class="quota-header-row" id="quotaHeaderRow">
+            <button class="compact-btn" id="selectAllBtn" onclick="toggleSelectAll()" style="display:none;">✅ Select All</button>
+            <div class="quota-text" id="quotaHeader">0 / 0 Files Selected</div>
+        </div>
         <div class="progress-container">
             <div class="progress-fill" id="quotaFill"></div>
         </div>
 
-        <div class="search-actions" id="searchBarBlock">
-            <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search your files..." onkeyup="debouncedSearch()">
-            <button class="select-all-btn" onclick="selectAllOnPage()">✅ Select All</button>
-        </div>
+        <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search your files..." onkeyup="debouncedSearch()">
     </div>
 
     <!-- 📂 TAB 1: CLOUD FILES -->
@@ -413,14 +414,53 @@
             setTimeout(() => { t.className = 'toast'; }, 3000);
         }
 
-        // 💾 SCOPED LOCAL STORAGE CACHE ENGINE
-        function saveCache() {
-            if(shortId) localStorage.setItem('queue_' + shortId, JSON.stringify(selectedItems));
+        // 💾 1-HOUR AUTO-CLEANUP CACHE SYSTEM
+        function cleanupOldCaches() {
+            const oneHour = 60 * 60 * 1000;
+            const now = Date.now();
+            let keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key && key.startsWith('queue_')) {
+                    try {
+                        let parsed = JSON.parse(localStorage.getItem(key));
+                        if (now - parsed.time > oneHour) { keysToRemove.push(key); }
+                    } catch(e) {}
+                }
+            }
+            keysToRemove.forEach(k => localStorage.removeItem(k));
         }
+
+        function saveCache() {
+            if(shortId) {
+                localStorage.setItem('queue_' + shortId, JSON.stringify({
+                    time: Date.now(),
+                    data: selectedItems
+                }));
+            }
+        }
+
         function loadCache() {
+            cleanupOldCaches(); 
             if(shortId) {
                 let saved = localStorage.getItem('queue_' + shortId);
-                if(saved) selectedItems = JSON.parse(saved);
+                if(saved) {
+                    try {
+                        let parsed = JSON.parse(saved);
+                        if (Date.now() - parsed.time <= 3600000) {
+                            selectedItems = parsed.data || [];
+                        } else {
+                            localStorage.removeItem('queue_' + shortId);
+                        }
+                    } catch (e) {
+                        // Fallback & Auto-Upgrade for old cache formats
+                        let parsed = JSON.parse(saved);
+                        if(Array.isArray(parsed)) {
+                            selectedItems = parsed;
+                            saveCache(); 
+                        }
+                    }
+                }
             }
         }
 
@@ -482,7 +522,7 @@
                     return { t: parts[0], s: parts[1] || 'Unknown', originalIndex: idx, sizeBytes: parseSize(parts[1] || '0 B') };
                 });
                 
-                loadCache(); // 💾 Restore state if they closed the app
+                loadCache(); 
                 filteredMovies = movies;
                 
                 document.getElementById('paginationBar').style.display = 'flex';
@@ -494,13 +534,82 @@
             }
         }
 
+        // 🧠 GET CURRENT PAGE ITEMS
+        function getPaginatedItems() {
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            return filteredMovies.slice(start, end);
+        }
+
+        // 🧠 CHECK IF ALL CURRENT ITEMS ARE SELECTED
+        function isAllVisibleSelected() {
+            const visible = getPaginatedItems();
+            if (visible.length === 0) return false;
+            return visible.every(movie => selectedItems.some(m => m.originalIndex === movie.originalIndex));
+        }
+
+        // 🧠 DYNAMIC BUTTON TOGGLE
+        function updateSelectAllButton() {
+            const btn = document.getElementById('selectAllBtn');
+            if (!btn) return;
+            if (filteredMovies.length === 0) {
+                btn.style.display = 'none';
+                return;
+            }
+            btn.style.display = 'block';
+            
+            if (isAllVisibleSelected()) {
+                btn.innerText = "❌ Deselect All";
+                btn.style.color = "var(--danger-color)";
+            } else {
+                btn.innerText = "✅ Select All";
+                btn.style.color = ""; 
+            }
+        }
+
+        function toggleSelectAll() {
+            const visible = getPaginatedItems();
+            if (visible.length === 0) return;
+
+            if (isAllVisibleSelected()) {
+                hapticSelect();
+                let removedCount = 0;
+                visible.forEach(movie => {
+                    selectedItems = selectedItems.filter(m => m.originalIndex !== movie.originalIndex);
+                    managerSelectedIds.delete(movie.originalIndex);
+                    removedCount++;
+                });
+                showToast(`❌ Removed ${removedCount} files`, true);
+            } else {
+                let addedCount = 0;
+                let limitHit = false;
+                for (let movie of visible) {
+                    if (!selectedItems.some(m => m.originalIndex === movie.originalIndex)) {
+                        if (selectedItems.length >= userLimit) {
+                            limitHit = true;
+                            break;
+                        }
+                        selectedItems.push(movie);
+                        addedCount++;
+                    }
+                }
+                if (addedCount > 0) {
+                    hapticSuccess();
+                    showToast(`✅ Added ${addedCount} files`);
+                }
+                if (limitHit) showVIPModal();
+            }
+            
+            saveCache();
+            updateProgressUI();
+            renderFilesList();
+        }
+
         function renderFilesList() {
             const container = document.getElementById('movie-list');
             container.innerHTML = ''; 
             const fragment = document.createDocumentFragment();
-            const start = (currentPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const paginatedItems = filteredMovies.slice(start, end);
+            const paginatedItems = getPaginatedItems();
 
             paginatedItems.forEach(movie => {
                 const div = document.createElement('div');
@@ -522,7 +631,11 @@
             container.appendChild(fragment);
             document.getElementById('pageInfo').innerText = `Page ${currentPage} of ${Math.ceil(filteredMovies.length / itemsPerPage) || 1}`;
             document.getElementById('prevBtn').disabled = currentPage === 1;
-            document.getElementById('nextBtn').disabled = end >= filteredMovies.length;
+            
+            const start = (currentPage - 1) * itemsPerPage;
+            document.getElementById('nextBtn').disabled = (start + itemsPerPage) >= filteredMovies.length;
+            
+            updateSelectAllButton();
             updateProgressUI();
         }
 
@@ -550,34 +663,6 @@
             }, 150);
         }
 
-        // 🧠 SMART SELECT ALL ON PAGE
-        function selectAllOnPage() {
-            const start = (currentPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const paginatedItems = filteredMovies.slice(start, end);
-            
-            let addedCount = 0;
-            for(let movie of paginatedItems) {
-                if(!selectedItems.some(m => m.originalIndex === movie.originalIndex)) {
-                    if(selectedItems.length >= userLimit) break;
-                    selectedItems.push(movie);
-                    addedCount++;
-                }
-            }
-            
-            if(addedCount > 0) {
-                hapticSuccess();
-                showToast(`✅ Added ${addedCount} files to Queue!`);
-                saveCache(); // 💾 Save immediately
-            } else if (selectedItems.length >= userLimit) {
-                showVIPModal();
-            } else {
-                hapticError();
-                showToast("All items on this page are already selected.", true);
-            }
-            renderFilesList();
-        }
-
         function toggleFileSelection(checkbox) {
             hapticSelect();
             const id = parseInt(checkbox.value);
@@ -593,7 +678,8 @@
                 selectedItems = selectedItems.filter(m => m.originalIndex !== id);
                 managerSelectedIds.delete(id); 
             }
-            saveCache(); // 💾 Save immediately
+            saveCache(); 
+            updateSelectAllButton();
             updateProgressUI();
             checkToolbarVisibility();
         }
@@ -606,7 +692,7 @@
             document.getElementById('nav-manager').innerText = `⭐ Queue (${selectedItems.length})`;
             
             if(percent >= 100) document.getElementById('quotaFill').style.background = 'var(--danger-color)';
-            else document.getElementById('quotaFill').style.background = 'var(--accent-gradient)';
+            else document.getElementById('quotaFill').style.background = '';
         }
 
         function renderManager() {
@@ -652,7 +738,7 @@
                     const movedItem = selectedItems.splice(evt.oldIndex, 1)[0];
                     selectedItems.splice(evt.newIndex, 0, movedItem);
                     document.getElementById('sortDrop').value = 'manual';
-                    saveCache(); // 💾 Save reorder
+                    saveCache(); 
                 }
             });
 
@@ -663,7 +749,7 @@
             hapticSelect();
             selectedItems = selectedItems.filter(m => m.originalIndex !== id);
             managerSelectedIds.delete(id);
-            saveCache(); // 💾 Save
+            saveCache(); 
             renderManager();
             updateProgressUI();
             renderFilesList(); 
@@ -673,7 +759,7 @@
             hapticSelect();
             const val = document.getElementById('sortDrop').value;
             if(val === 'size') selectedItems.sort((a, b) => b.sizeBytes - a.sizeBytes);
-            saveCache(); // 💾 Save
+            saveCache(); 
             renderManager();
         }
 
@@ -708,14 +794,14 @@
             else selectedItems = [...rest, ...toMove];
             
             document.getElementById('sortDrop').value = 'manual';
-            saveCache(); // 💾 Save
+            saveCache(); 
             clearManagerSelection();
         }
 
         function removeMulti() {
             hapticSelect();
             selectedItems = selectedItems.filter(m => !managerSelectedIds.has(m.originalIndex));
-            saveCache(); // 💾 Save
+            saveCache(); 
             clearManagerSelection();
             updateProgressUI();
             renderFilesList();
@@ -751,10 +837,12 @@
             document.getElementById(`nav-${tabId}`).classList.add('active');
             
             if(tabId === 'files') {
-                document.getElementById('searchBarBlock').style.display = 'flex';
+                document.getElementById('searchInput').style.display = 'block';
+                document.getElementById('quotaHeaderRow').style.display = 'flex';
                 renderFilesList();
             } else {
-                document.getElementById('searchBarBlock').style.display = 'none';
+                document.getElementById('searchInput').style.display = 'none';
+                document.getElementById('quotaHeaderRow').style.display = 'none';
             }
             
             if(tabId === 'manager') renderManager();

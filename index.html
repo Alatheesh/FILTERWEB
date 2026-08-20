@@ -514,12 +514,18 @@
                 const data = await response.json();
                 
                 let rawArray = [];
-                if (data.ok && data.result && data.result.content) {
+                
+                // 🚀 UNIVERSAL PARSER (Supports Npoint, Dpaste, Bytebin, & MD-5 Paste)
+                if (Array.isArray(data)) {
+                    rawArray = data; // Direct JSON array (Bytebin, MD-5 Paste, Npoint)
+                } else if (data.ok && data.result && data.result.content) {
                     let jsonString = "";
                     data.result.content.forEach(p => { if (p.children && p.children[0]) jsonString += p.children[0]; });
                     rawArray = JSON.parse(jsonString);
+                } else if (typeof data === 'string') {
+                    rawArray = JSON.parse(data);
                 } else {
-                    rawArray = data;
+                    rawArray = data.content || data.result || [];
                 }
                 
                 movies = rawArray.map((item, idx) => {
@@ -535,6 +541,7 @@
                 updateProgressUI();
                 renderFilesList();
             } catch (e) {
+                console.error("Cloud Parse Error:", e);
                 document.getElementById('movie-list').innerHTML = '<div style="text-align:center; margin-top:40px; color:var(--danger-color); font-weight:bold;">❌ Error loading secure database.</div>';
             }
         }

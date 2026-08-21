@@ -515,9 +515,12 @@
                 
                 let rawArray = [];
                 
-                // 🚀 UNIVERSAL PARSER (Supports Npoint, Dpaste, Bytebin, & MD-5 Paste)
+                // 🚀 UNIVERSAL PARSER (Supports Npoint, Dpaste, Pastebin.ai, PasteFox, Bytebin, & MD-5 Paste)
                 if (Array.isArray(data)) {
                     rawArray = data; // Direct JSON array (Bytebin, MD-5 Paste, Npoint)
+                } else if (data.content) {
+                    // Handles raw string or object content formats from Pastebin/PasteFox
+                    rawArray = typeof data.content === 'string' ? JSON.parse(data.content) : data.content;
                 } else if (data.ok && data.result && data.result.content) {
                     let jsonString = "";
                     data.result.content.forEach(p => { if (p.children && p.children[0]) jsonString += p.children[0]; });
@@ -525,7 +528,7 @@
                 } else if (typeof data === 'string') {
                     rawArray = JSON.parse(data);
                 } else {
-                    rawArray = data.content || data.result || [];
+                    rawArray = data.result || [];
                 }
                 
                 movies = rawArray.map((item, idx) => {
